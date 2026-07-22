@@ -4,8 +4,7 @@
 app.js配置后端服务地址
 
 微信原生写法
-<img width="520" height="980" alt="image" src="https://github.com/user-attachments/assets/c2f768f9-727d-49a0-9bfd-4518de986afc" />
 
-<img width="520" height="980" alt="image" src="https://github.com/user-attachments/assets/d5ef53a9-44b1-4348-8aca-4a541d9028c6" />
-
-<img width="520" height="980" alt="image" src="https://github.com/user-attachments/assets/caa96566-2c08-48db-a97e-40bc740b8904" />
+<img width="320" height="680" alt="image" src="https://github.com/user-attachments/assets/c2f768f9-727d-49a0-9bfd-4518de986afc" />
+<img width="320" height="680" alt="image" src="https://github.com/user-attachments/assets/d5ef53a9-44b1-4348-8aca-4a541d9028c6" />
+<img width="320" height="680" alt="image" src="https://github.com/user-attachments/assets/caa96566-2c08-48db-a97e-40bc740b8904" />
