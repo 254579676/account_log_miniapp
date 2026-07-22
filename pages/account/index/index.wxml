@@ -1,0 +1,224 @@
+<!-- pages/index/index.wxml -->
+<view class="container">
+  <!-- 顶部卡片 - 本月收支概览 -->
+  <view class="overview-card">
+    <view class="month-selector">
+      <view class="month-title">{{currentYear}}年{{currentMonth}}月</view>
+      <view class="month-actions">
+        <view class="month-action" bindtap="prevMonth">
+          <image src="/assets/icons/chevron-left.png" class="icon" mode="aspectFit"></image>
+        </view>
+        <view class="month-action" bindtap="nextMonth">
+         <image src="/assets/icons/chevron-right.png" class="icon" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+    
+    <view class="overview-data">
+      <view class="overview-item">
+        <view class="overview-label">本月支出</view>
+        <view class="overview-value text-danger">¥{{monthlyStats.expense}}</view>
+      </view>
+      <view class="overview-item">
+        <view class="overview-label">本月收入</view>
+        <view class="overview-value text-primary">¥{{monthlyStats.income}}</view>
+      </view>
+      <view class="overview-item">
+        <view class="overview-label">结余</view>
+        <view class="overview-value {{monthlyStats.income - monthlyStats.expense >= 0 ? 'text-primary' : 'text-danger'}}">
+          ¥{{monthlyStats.amount}}
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- AI智能记账 -->
+  <view class="card ai-entry-card">
+    <view class="title">AI智能记账</view>
+    <view class="grid">
+      <view class="grid-item grid-item-4" bindtap="navigateToVoiceRecord">
+        <view class="ai-entry-item">
+          <view class="ai-entry-icon">
+           <image src="/assets/icons/microphone.png" class="icon" mode="aspectFit"></image>
+          </view>
+          <view class="ai-entry-text">语音</view>
+  
+        </view>
+      </view>
+      <view class="grid-item grid-item-4" bindtap="navigateToRecord">
+        <view class="ai-entry-item">
+          <view class="ai-entry-icon">
+            <image src="/assets/icons/tab-record-active.png" class="icon" mode="aspectFit"></image>
+          </view>
+          <view class="ai-entry-text">手工</view>
+          
+        </view>
+      </view>
+      <view class="grid-item grid-item-4" bindtap="navigateToDetail">
+        <view class="ai-entry-item">
+          <view class="ai-entry-icon">
+            <image src="/assets/icons/tab-detail-active.png" class="icon" mode="aspectFit"></image>
+          </view>
+          <view class="ai-entry-text">明细</view>
+        
+        </view>
+      </view>
+      <view class="grid-item grid-item-4" bindtap="goToStatsPage">
+        <view class="ai-entry-item">
+          <view class="ai-entry-icon">
+            <image src="/assets/icons/tab-stats-active.png" class="icon" mode="aspectFit"></image>
+          </view>
+          <view class="ai-entry-text">统计</view>
+        
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷记账 -->
+  <view class="card quick-record-card">
+    <view class="flex flex-between flex-center">
+      <view class="title">快捷记账</view>
+      <view class="more-btn" bindtap="navigateToRecord">更多 
+      </view>
+    </view>
+    <view class="grid">
+      <block wx:for="{{expenseCategories}}" wx:key="id">
+        <view class="grid-item grid-item-3" data-category="{{item.id}}" data-type="expense" bindtap="quickRecord">
+          <view class="category-item {{item.categoryType}}">
+            <view class="category-icon">
+              <image src="/assets/icons/{{item.icon}}.png" class="icon" mode="aspectFit"></image>
+            </view>
+            <view class="category-name">{{item.name}}</view>
+          </view>
+        </view>
+      </block>
+      <block wx:for="{{incomeCategories}}" wx:key="id">
+        <view class="grid-item grid-item-3" data-category="{{item.id}}" data-type="income" bindtap="quickRecord">
+          <view class="category-item {{item.categoryType}}">
+            <view class="category-icon">
+              <image src="/assets/icons/{{item.icon}}.png" class="icon" mode="aspectFit"></image>
+            </view>
+            <view class="category-name">{{item.name}}</view>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+  
+  <!-- 最近账单 -->
+  <view class="card recent-bills-card">
+    <view class="flex flex-between flex-center">
+      <view class="title">最近账单</view>
+      <view class="more-btn" bindtap="navigateToDetail">查看全部</view>
+    </view>
+    <view class="recent-bills-list">
+      <block wx:for="{{recentTransactions}}" wx:key="id">
+        <view class="bill-item" bindtap="viewDetail" data-id="{{item.id}}">
+          <view class="bill-category">
+            <view class="category-icon">
+             <image src="/assets/icons/{{item.categoryIcon}}.png" class="icon" mode="aspectFit"></image>
+            </view>
+          </view>
+          <view class="bill-info">
+            <view class="bill-title">{{item.categoryName}}</view>
+            <view class="bill-desc">{{item.description || '无备注'}}</view>
+            <view class="bill-date">{{item.date}}</view>
+          </view>
+          <view class="bill-amount {{item.type === 'expense' ? 'text-danger' : 'text-primary'}}">
+            {{item.type === 'expense' ? '-' : '+'}}¥{{item.amount}}
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+  
+  <!-- 预算进度 -->
+  <view class="card budget-card">
+    <view class="budget-header">
+      <view class="budget-title">
+        <text class="title">预算进度</text>
+      </view>
+      <view class="more-btn" bindtap="navigateToBudget">
+        <text>设置预算</text>
+      </view>
+    </view>
+    
+    <view class="budget-list">
+      <block wx:for="{{budgets}}" wx:key="category">
+        <view class="budget-item {{item.percent >= 90 ? 'budget-warning' : item.percent >= 70 ? 'budget-caution' : 'budget-normal'}}">
+          <view class="budget-content">
+            <!-- 右侧内容区域 -->
+            <view class="budget-right-content">
+              <!-- 第一行：分类图标、分类名称和金额信息 -->
+              <view class="budget-first-row">
+                <view class="budget-category-info">
+                  <view class="budget-icon-wrapper">
+                    <image src="/assets/icons/{{item.category_icon}}.png" class="budget-icon" mode="aspectFit"></image>
+                  </view>
+                  <view class="budget-category">{{item.category_name}}</view>
+                </view>
+                <view class="budget-amount-info">
+                  <text class="budget-spent">¥{{item.pay_amount}}</text>
+                  <text class="budget-separator">/</text>
+                  <text class="budget-total">¥{{item.budget_amount}}</text>
+                </view>
+              </view>
+              
+              <!-- 第二行：进度条和百分比 -->
+              <view class="budget-second-row">
+                <view class="budget-progress-wrapper">
+                  <view class="budget-progress-bar">
+                    <view class="budget-progress-inner {{item.percent >= 90 ? 'progress-warning' : item.percent >= 70 ? 'progress-caution' : 'progress-normal'}}" style="width: {{item.percent}}">%</view>
+                  </view>
+                </view>
+                <view class="budget-percent-info">
+                  <text class="budget-percent {{item.percent >= 90 ? 'percent-warning' : item.percent >= 70 ? 'percent-caution' : 'percent-normal'}}">{{item.percent}}%</text>
+                </view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+    
+    <view wx:if="{{budgets.length === 0}}" class="budget-empty">
+      <view class="empty-icon">
+        <image src="/assets/icons/chart-line.png" class="icon" mode="aspectFit"></image>
+      </view>
+      <text class="empty-text">暂无预算设置</text>
+      <text class="empty-desc">点击设置预算，合理规划支出</text>
+    </view>
+  </view>
+</view>
+
+<!-- 快捷记账弹窗 -->
+<view class="quick-record-modal {{showQuickRecordModal ? 'show' : ''}}">
+  <view class="quick-record-content">
+    <view class="quick-record-header">
+      <view class="quick-record-title">{{quickRecordData.type === 'expense' ? '支出' : '收入'}} - {{quickRecordData.categoryName}}</view>
+      <view class="quick-record-close" bindtap="closeQuickRecord">
+        <image src="/assets/icons/close.png" class="icon" mode="aspectFit"></image>
+      </view>
+    </view>
+    <view class="quick-record-form">
+      <view class="form-group">
+        <view class="form-label">金额</view>
+        <input class="form-input" maxlength="12" type="digit" placeholder="0.00" bindinput="onAmountInput" value="{{quickRecordData.amount}}" focus="{{showQuickRecordModal}}"/>
+      </view>
+      <view class="form-group">
+        <view class="form-label">备注</view>
+        <input class="form-input" maxlength="20" placeholder="备注" value="{{quickRecordData.description}}" bindinput="onDescriptionInput"/>
+      </view>
+      <view class="form-group">
+        <view class="form-label">日期</view>
+        <picker mode="date" value="{{quickRecordData.date}}" bindchange="onDateChange">
+          <view class="form-input">{{quickRecordData.date}}</view>
+        </picker>
+      </view>
+      <view class="form-actions">
+        <button class="btn btn-primary" bindtap="submitQuickRecord">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

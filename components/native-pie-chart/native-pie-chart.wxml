@@ -1,0 +1,31 @@
+<view class="pie-chart-container">
+  <view class="chart-and-legend">
+    <canvas 
+      class="pie-canvas" 
+      canvas-id="{{canvasId}}" 
+      id="{{canvasId}}"
+      type="2d"
+      style="width: {{width}}px; height: {{height}}px;"
+      bindtap="onCanvasTap">
+    </canvas>
+   
+    <view class="no-data" wx:if="{{!hasData}}">
+      暂无数据
+    </view>
+  </view>
+  
+  <!-- 浮窗固定在右上角 -->
+  <view class="tooltip" wx:if="{{showTooltip}}">
+    <view class="tooltip-content">
+      <view class="tooltip-item">
+        <text class="tooltip-value">{{selectedCategory.name}}</text>
+      </view>
+      <view class="tooltip-item">
+        <text class="tooltip-value">¥{{selectedCategory.value}}</text>
+      </view>
+      <view class="tooltip-item">
+        <text class="tooltip-value">{{selectedCategory.percentage}}%</text>
+      </view>
+    </view>
+  </view>
+</view>

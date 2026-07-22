@@ -1,0 +1,657 @@
+<view class="container">
+  <!-- 顶部信息 -->
+  <view class="header-info">
+    <!-- 第一行：学生信息 -->
+    <view class="student-info">
+      <image class="child-avatar" src="{{currentChild.avatar_url || '/assets/icons/child.png'}}" />
+      <view class="student-details">
+        <text class="student-name">{{currentChild.name}}</text>
+        <view class="student-meta">
+          <text class="class-info">{{currentChild.grade || ''}} {{currentChild.class || ''}}</text>
+          <text class="school-info">{{currentChild.school || ''}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 第二行：功能按钮 -->
+    <view class="function-buttons">
+      <button class="stats-btn" bindtap="onViewStats">
+        <text class="btn-icon">📊</text>
+        统计
+      </button>
+      <button class="unit-test-btn" bindtap="onAddUnitTest">
+        <text class="btn-icon">📝</text>
+        单元测试
+      </button>
+      <button class="comprehensive-test-btn" bindtap="onAddComprehensiveTest">
+        <text class="btn-icon">📋</text>
+        综合测试
+      </button>
+    </view>
+  </view>
+
+  <!-- 标签页导航（包含年级筛选） -->
+  <view class="tab-container">
+    <view class="tab-header">
+      <!-- 标签页选项 -->
+      <view class="tab-items">
+        <view class="tab-item {{activeTab === 'comprehensive' ? 'active' : ''}}" 
+              bindtap="onTabChange" data-tab="comprehensive">
+          <text class="tab-text">综合考试</text>
+          <text class="tab-count">{{otherExamList.length}}次</text>
+        </view>
+        <view class="tab-item {{activeTab === 'unit' ? 'active' : ''}}" 
+              bindtap="onTabChange" data-tab="unit">
+          <text class="tab-text">单元测试</text>
+          <text class="tab-count">{{unitTestList.length}}次</text>
+        </view>
+      </view>
+
+      <!-- 年级筛选器 -->
+      <view class="grade-picker-wrapper">
+        <picker mode="selector" range="{{gradeFilterOptions}}" value="{{selectedGradeIndex}}" bindchange="onGradeFilterChange">
+        <view class="grade-picker">
+          <text class="picker-text">{{selectedGradeText}}</text>
+          <text class="picker-arrow">▼</text>
+        </view>
+        </picker>
+      </view>
+
+    </view>
+  </view>
+
+  <!-- 综合考试列表 -->
+  <view class="exam-list" wx:if="{{activeTab === 'comprehensive'}}">
+    <!-- 固定高度的滚动区域 -->
+    <scroll-view class="exam-scroll-container" scroll-y="true" wx:if="{{otherExamList.length > 0}}">
+      <view class="exam-item simple" wx:for="{{otherExamList}}" wx:key="id">
+        <view class="exam-main-info">
+          <view class="exam-left">
+            <text class="exam-subject" data-type="{{item.exam_type}}">{{item.subject_name || item.exam_type}}</text>
+          </view>
+          <view class="exam-right">
+            <text class="score">{{item.score}}</text>
+            <text class="total-score">/{{item.total_score}}</text>
+            <view class="expand-icon" bindtap="onViewDetail" data-exam="{{item}}">
+              <text class="expand-text">单科详情</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="exam-footer">
+          <text class="date">{{item.exam_date}}</text>
+          <view class="footer-right">
+            <view class="image-icon" wx:if="{{item.images && item.images.length > 0}}" bindtap="onImagePreview"
+              data-url="{{baseUrl+item.images[0]}}" data-urls="{{item.images}}">
+              <text class="icon-text">📷</text>
+              <text class="icon-count">{{item.images.length}}</text>
+            </view>
+            <text class="ranking" wx:if="{{item.grade_ranking}}">年级第{{item.grade_ranking}}名</text>
+            <text class="ranking" wx:if="{{item.class_ranking}}">班级第{{item.class_ranking}}名</text>
+            <view class="edit-btn" bindtap="onShowEditOptions" data-exam="{{item}}">
+              <text class="edit-icon">✏️</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 单科成绩详情展示 -->
+        <view class="single-subject-details" wx:if="{{expandedExams[item.id]}}">
+          <view class="subject-row">
+            <view class="subject-item-simple" wx:for="{{singleSubjectDetails[item.id]}}" wx:key="id" wx:for-item="subject">
+              <text class="subject-name-simple" bindtap="onEditSingleSubject" data-subject="{{subject}}">{{subject.subject_name}}</text>
+              <text class="subject-score-simple" bindtap="onEditSingleSubject" data-subject="{{subject}}">{{subject.score}}</text>
+              <view class="subject-image-icon-simple" wx:if="{{subject.images && subject.images.length > 0}}" 
+                    catchtap="onImagePreview" 
+                    data-url="{{baseUrl+subject.images[0]}}" 
+                    data-urls="{{subject.images}}">
+                <text class="icon-text-simple">📷</text>
+              </view>
+            </view>
+          </view>
+          <view class="no-subjects-simple" wx:if="{{!singleSubjectDetails[item.id] || singleSubjectDetails[item.id].length === 0}}">
+            <text class="no-subject-text-simple">暂无单科成绩</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 综合考试空状态 -->
+    <view class="empty-state" wx:if="{{otherExamList.length === 0}}">
+      <image class="empty-icon" src="/assets/icons/empty-homework.png" />
+      <text class="empty-text">还没有综合考试记录</text>
+      <text class="empty-desc">点击上方"综合测试"按钮记录第一次考试</text>
+    </view>
+  </view>
+
+  <!-- 单元测试列表 -->
+  <view class="exam-list" wx:if="{{activeTab === 'unit'}}">
+
+    <!-- 固定高度的滚动区域 -->
+    <scroll-view class="exam-scroll-container" scroll-y="true" wx:if="{{unitTestList.length > 0}}">
+      <view class="exam-item simple" wx:for="{{unitTestList}}" wx:key="id">
+        <view class="exam-main-info">
+          <view class="exam-left">
+            <text class="exam-name">{{item.exam_name}}</text>
+            <text class="exam-subject" data-type="{{item.exam_type}}">{{item.subject_name || item.exam_type}}</text>
+          </view>
+          <view class="exam-right">
+            <text class="score">{{item.score}}</text>
+            <text class="total-score">/{{item.total_score}}</text>
+          </view>
+        </view>
+
+        <view class="exam-footer">
+          <text class="date">{{item.exam_date}}</text>
+          <view class="footer-right">
+            <view class="image-icon" wx:if="{{item.images && item.images.length > 0}}" bindtap="onImagePreview"
+              data-url="{{item.images[0]}}" data-urls="{{item.images}}">
+              <text class="icon-text">📷</text>
+              <text class="icon-count">{{item.images.length}}</text>
+            </view>
+            <text class="ranking" wx:if="{{item.class_ranking}}">班级第{{item.class_ranking}}名</text>
+            <view class="edit-btn" bindtap="onShowUnitTestOptions" data-exam="{{item}}">
+              <text class="edit-icon">✏️</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+
+    <!-- 单元测试空状态 -->
+    <view class="empty-state" wx:if="{{unitTestList.length === 0}}">
+      <image class="empty-icon" src="/assets/icons/empty-homework.png" />
+      <text class="empty-text">还没有单元测试记录</text>
+      <text class="empty-desc">点击上方"单元测试"按钮记录第一次测试</text>
+    </view>
+  </view>
+
+  <!-- 单科成绩弹窗 -->
+  <view class="modal-mask" wx:if="{{showSingleSubjectModal}}" bindtap="onCancelSingleSubject">
+    <view class="modal-content" catchtap="onModalContentTap">
+      <view class="modal-header">
+        <text class="modal-title">{{editingSingleSubject ? '编辑单科成绩' : '单科成绩'}}</text>
+        <text class="close-btn" bindtap="onCancelSingleSubject">×</text>
+      </view>
+
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">科目 *</text>
+          <picker mode="selector" range="{{subjects}}" value="{{selectedSubjectIndex || 0}}" bindchange="onSingleSubjectChange">
+            <view class="picker">
+              {{singleSubjectData.subject_name || '请选择科目'}}
+              <text class="picker-arrow">></text>
+            </view>
+          </picker>
+        </view>
+
+        <view class="form-item">
+          <text class="form-label">考试名称 *</text>
+          <input class="form-input" placeholder="自动生成或手动输入" value="{{singleSubjectData.exam_name}}"
+            bindinput="onSingleSubjectInputChange" data-field="exam_name" maxlength="50" />
+        </view>
+
+        <view class="form-row">
+          <view class="form-item half">
+            <text class="form-label">得分 *</text>
+            <input class="form-input" type="number" placeholder="0" value="{{singleSubjectData.score}}"
+              bindinput="onSingleSubjectInputChange" data-field="score" maxlength="50" />
+          </view>
+
+          <view class="form-item half">
+            <text class="form-label">总分 *</text>
+            <input class="form-input" type="number" placeholder="100" value="{{singleSubjectData.total_score}}"
+              bindinput="onSingleSubjectInputChange" data-field="total_score" maxlength="50" />
+          </view>
+        </view>
+
+        <view class="form-row">
+          <view class="form-item half">
+            <text class="form-label">考试日期</text>
+            <picker mode="date" value="{{singleSubjectData.exam_date}}" bindchange="onSingleSubjectInputChange"
+              data-field="exam_date">
+              <view class="picker">
+                {{singleSubjectData.exam_date || '请选择日期'}}
+                <text class="picker-arrow">></text>
+              </view>
+            </picker>
+          </view>
+
+          <view class="form-item half">
+            <text class="form-label">班级排名</text>
+            <input class="form-input" type="number" placeholder="选填" value="{{singleSubjectData.class_ranking}}"
+              bindinput="onSingleSubjectInputChange" data-field="class_ranking" maxlength="50" />
+          </view>
+        </view>
+
+        <view class="form-item">
+          <text class="form-label">试卷照片</text>
+          <view class="image-upload">
+            <view class="image-list">
+              <view class="image-item" wx:for="{{singleSubjectData.images}}" wx:key="*this">
+                <image class="uploaded-img" src="{{item.startsWith('http') ? item : baseUrl+item}}" mode="aspectFill" bindtap="onImagePreview"
+                  data-url="{{item}}" />
+                <view class="delete-btn" bindtap="onDeleteSingleSubjectImage" data-index="{{index}}">×</view>
+              </view>
+              <view class="add-image" wx:if="{{singleSubjectData.images.length < 9}}" bindtap="onChooseSingleSubjectImage">
+                <text class="add-icon">+</text>
+                <text class="add-text">添加图片</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="modal-footer modal-footer-vertical">
+        <view class="continue-add-option" wx:if="{{!editingSingleSubject}}">
+          <text class="continue-label" bindtap="onToggleContinueAddSingleSubject">保存后继续添加</text>
+          <checkbox class="continue-checkbox" checked="{{continueAddSingleSubject}}" bindtap="onToggleContinueAddSingleSubject" />
+        </view>
+        <view class="footer-buttons">
+          <button class="cancel-btn" bindtap="onCancelSingleSubject">取消</button>
+          <button class="save-btn" bindtap="onSaveSingleSubject">{{editingSingleSubject ? '更新' : '保存'}}</button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 单元测试弹窗 -->
+  <view class="modal-mask" wx:if="{{showUnitTestModal}}" bindtap="onCancelUnitTest">
+    <view class="modal-content" catchtap="onModalContentTap">
+      <view class="modal-header">
+        <text class="modal-title">{{editingExam ? '编辑单元测试' : '单元测试'}}</text>
+        <text class="close-btn" bindtap="onCancelUnitTest">×</text>
+      </view>
+
+      <view class="modal-body">
+        <view class="form-item">
+          <text class="form-label">科目 *</text>
+          <picker mode="selector" range="{{subjects}}" value="{{selectedSubjectIndex || 0}}" bindchange="onUnitTestSubjectChange">
+            <view class="picker">
+              {{unitTestData.subject_name || '请选择科目'}}
+              <text class="picker-arrow">></text>
+            </view>
+          </picker>
+        </view>
+
+        <view class="form-item">
+          <text class="form-label">考试名称 *</text>
+          <input class="form-input" placeholder="自动生成或手动输入" value="{{unitTestData.exam_name}}"
+            bindinput="onUnitTestInputChange" data-field="exam_name" maxlength="50" />
+        </view>
+
+        <view class="form-row">
+          <view class="form-item half">
+            <text class="form-label">得分 *</text>
+            <input class="form-input" type="number" placeholder="0" value="{{unitTestData.score}}"
+              bindinput="onUnitTestInputChange" data-field="score" maxlength="50" />
+          </view>
+
+          <view class="form-item half">
+            <text class="form-label">总分 *</text>
+            <input class="form-input" type="number" placeholder="100" value="{{unitTestData.total_score}}"
+              bindinput="onUnitTestInputChange" data-field="total_score" maxlength="50" />
+          </view>
+        </view>
+
+        <view class="form-row">
+          <view class="form-item half">
+            <text class="form-label">考试日期</text>
+            <picker mode="date" value="{{unitTestData.exam_date}}" bindchange="onUnitTestInputChange"
+              data-field="exam_date">
+              <view class="picker">
+                {{unitTestData.exam_date || '请选择日期'}}
+                <text class="picker-arrow">></text>
+              </view>
+            </picker>
+          </view>
+
+          <view class="form-item half">
+            <text class="form-label">班级排名</text>
+            <input class="form-input" type="number" placeholder="选填" value="{{unitTestData.class_ranking}}"
+              bindinput="onUnitTestInputChange" data-field="class_ranking" maxlength="50" />
+          </view>
+        </view>
+
+        <view class="form-item">
+          <text class="form-label">试卷照片</text>
+          <view class="image-upload">
+            <view class="image-list">
+              <view class="image-item" wx:for="{{unitTestData.images}}" wx:key="*this">
+                <image class="uploaded-img" src="{{item.startsWith('http') ? item : baseUrl+item}}" mode="aspectFill" bindtap="onImagePreview"
+                  data-url="{{item}}" />
+                <view class="delete-btn" bindtap="onDeleteImage" data-index="{{index}}">×</view>
+              </view>
+              <view class="add-image" wx:if="{{unitTestData.images.length < 9}}" bindtap="onChooseImage">
+                <text class="add-icon">+</text>
+                <text class="add-text">添加图片</text>
+              </view>
+            </view>
+          </view>
+        </view>
+
+        <view class="form-item">
+          <text class="form-label">备注</text>
+          <textarea class="form-textarea" placeholder="请输入备注信息" value="{{unitTestData.remarks}}"
+            bindinput="onUnitTestInputChange" data-field="remarks" maxlength="300" />
+        </view>
+        
+      </view>
+
+      <view class="modal-footer">
+        <button class="cancel-btn" bindtap="onCancelUnitTest">取消</button>
+        <button class="save-btn" bindtap="onSaveUnitTest">{{editingExam ? '更新' : '保存'}}</button>
+      </view>
+
+      
+    </view>
+  </view>
+
+  <!-- 综合测试弹窗 -->
+  <view class="modal-mask" wx:if="{{showComprehensiveModal}}" bindtap="onCancelComprehensive">
+    <view class="modal-content comprehensive-modal" catchtap="onModalContentTap">
+      <view class="modal-header">
+        <text class="modal-title">{{editingExam ? '编辑综合测试' : '综合测试'}}</text>
+        <text class="close-btn" bindtap="onCancelComprehensive">×</text>
+      </view>
+
+      <view class="modal-body">
+
+
+        <!-- 考试类型选择：月考、期中考试、期末考试、模拟考试 -->
+        <view class="form-item">
+          <view style="display: flex; align-items: center;">
+            <text class="form-label">考试类型</text>
+            <text class="form-required">*</text>
+          </view>
+          <picker mode="selector" range="{{examTypes}}" value="0" bindchange="onExamTypeChange">
+            <view class="picker">
+              {{comprehensiveTestData.exam_type || '请选择考试类型'}}
+              <text class="picker-arrow">></text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 考试日期 -->
+        <view class="form-item">
+          <view style="display: flex; align-items: center;">
+            <text class="form-label">考试日期</text>
+            <text class="form-required">*</text>
+          </view>
+          <picker mode="date" value="{{comprehensiveTestData.exam_date}}" bindchange="onDateChange">
+            <view class="picker">
+              {{comprehensiveTestData.exam_date || '请选择日期'}}
+              <text class="picker-arrow">></text>
+            </view>
+          </picker>
+        </view>
+
+        <!-- 得分 & 总分 -->
+        <view class="form-row">
+          <view class="form-item half">
+            <view style="display: flex; align-items: center;">
+              <text class="form-label">得分</text>
+              <text class="form-required">*</text>
+            </view>
+            <input class="form-input" type="digit" placeholder="0" value="{{comprehensiveTestData.score}}" bindinput="onInputChange"
+              data-field="score" />
+          </view>
+          <view class="form-item half">
+            <view style="display: flex; align-items: center;">
+              <text class="form-label">总分</text>
+              <text class="form-required">*</text>
+            </view>
+            <input class="form-input" type="digit" placeholder="100" value="{{comprehensiveTestData.total_score}}"
+              bindinput="onInputChange" data-field="total_score" />
+          </view>
+        </view>
+
+        <!-- 班级排名 & 年级排名（选填） -->
+        <view class="form-row">
+          <view class="form-item half">
+            <text class="form-label">班级排名</text>
+            <input class="form-input" type="number" placeholder="选填" value="{{comprehensiveTestData.class_ranking}}"
+              bindinput="onInputChange" data-field="class_ranking" maxlength="50" />
+          </view>
+          <view class="form-item half">
+            <text class="form-label">年级排名</text>
+            <input class="form-input" type="number" placeholder="选填" value="{{comprehensiveTestData.grade_ranking}}"
+              bindinput="onInputChange" data-field="grade_ranking" maxlength="50" />
+          </view>
+        </view>
+
+        <!-- 备注 -->
+        <view class="form-item">
+          <text class="form-label">备注</text>
+          <textarea class="form-textarea" placeholder="请输入备注信息" value="{{comprehensiveTestData.remarks}}"
+            bindinput="onInputChange" data-field="remarks" maxlength="300" />
+        </view>
+        
+      </view>
+
+
+      <view class="modal-footer">
+        <button class="cancel-btn" bindtap="onCancelComprehensive">取消</button>
+        <button class="save-btn" bindtap="onSaveComprehensiveTest">{{editingExam ? '更新' : '保存'}}</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 编辑选项弹窗 -->
+  <view class="modal-mask" wx:if="{{showEditOptions}}" bindtap="onHideEditOptions">
+    <view class="modal-content edit-options-modal" catchtap="onModalContentTap">
+      <view class="modal-header">
+        <text class="modal-title">编辑选项</text>
+        <text class="close-btn" bindtap="onHideEditOptions">×</text>
+      </view>
+
+      <view class="modal-body">
+        <view class="edit-option-item" bindtap="onEditComprehensiveScore">
+          <text class="option-icon">📊</text>
+          <text class="option-text">编辑综合成绩</text>
+          <text class="option-arrow">></text>
+        </view>
+
+        <view class="edit-option-item" bindtap="onEditAddSingleSubject">
+          <text class="option-icon">➕</text>
+          <text class="option-text">添加单科成绩</text>
+          <text class="option-arrow">></text>
+        </view>
+
+        <view class="edit-option-item" bindtap="onEditAddError">
+          <text class="option-icon">❌</text>
+          <text class="option-text">添加错题</text>
+          <text class="option-arrow">></text>
+        </view>
+      </view>
+
+      <view class="modal-footer">
+        <button class="cancel-btn" bindtap="onHideEditOptions">取消</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 单元测试编辑选项弹窗 -->
+  <view class="modal-mask" wx:if="{{showUnitTestOptions}}" bindtap="onHideUnitTestOptions">
+    <view class="modal-content edit-options-modal" catchtap="onModalContentTap">
+      <view class="modal-header">
+        <text class="modal-title">操作选项</text>
+        <text class="close-btn" bindtap="onHideUnitTestOptions">×</text>
+      </view>
+
+      <view class="modal-body">
+        <view class="edit-option-item" bindtap="onEditUnitTest">
+          <text class="option-icon">📝</text>
+          <text class="option-text">编辑单元测试</text>
+          <text class="option-arrow">></text>
+        </view>
+
+        <view class="edit-option-item" bindtap="onAddErrorToUnitTest">
+          <text class="option-icon">❌</text>
+          <text class="option-text">添加错题记录</text>
+          <text class="option-arrow">></text>
+        </view>
+      </view>
+
+      <view class="modal-footer">
+        <button class="cancel-btn" bindtap="onHideUnitTestOptions">取消</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错题录入弹窗（参考错题页面重新设计） -->
+  <view class="modal-mask" wx:if="{{showErrorInputModal}}" bindtap="onCancelErrorInput">
+    <view class="modal-content error-input-modal" catchtap="onModalContentTap">
+      <view class="modal-header">
+        <text class="modal-title">错题录入</text>
+        <text class="close-btn" bindtap="onCancelErrorInput">×</text>
+      </view>
+
+      <view class="modal-body">
+        <!-- 基本信息 -->
+        <view class="section-title">基本信息</view>
+        
+        <!-- 第一行：科目 + 错题来源 -->
+        <view class="form-row">
+          <view class="form-item half">
+            <text class="label required">学习科目</text>
+            <picker mode="selector" range="{{subjects}}" value="{{selectedSubjectIndex || 0}}" bindchange="onErrorSubjectChange">
+              <view class="picker-value">
+                <text class="picker-text">{{errorInputData.subject_name || '请选择'}}</text>
+                <text class="picker-arrow">▼</text>
+              </view>
+            </picker>
+          </view>
+
+          <view class="form-item half">
+            <text class="label required">错题来源</text>
+            <view class="picker-value disabled-picker">
+              <text class="picker-text">考试</text>
+            </view>
+          </view>
+        </view>
+
+        <!-- 第二行：题目类型 + 难度等级 -->
+        <view class="form-row">
+          <view class="form-item half">
+            <text class="label required">题目类型</text>
+            <picker mode="selector" range="{{errorQuestionTypes}}" range-key="name" value="{{errorQuestionTypeIndex}}" bindchange="onErrorQuestionTypeChange">
+              <view class="picker-value">
+                <text class="picker-text">{{errorInputData.question_type_name || '请选择'}}</text>
+                <text class="picker-arrow">▼</text>
+              </view>
+            </picker>
+          </view>
+          
+          <view class="form-item half">
+            <text class="label required">难度等级</text>
+            <picker mode="selector" range="{{difficultyLevels}}" range-key="text" bindchange="onErrorDifficultyChange">
+              <view class="picker-value">
+                <text class="picker-text">{{errorInputData.difficulty || '请选择'}}</text>
+                <text class="picker-arrow">▼</text>
+              </view>
+            </picker>
+          </view>
+        </view>
+
+        <!-- 第三行：记录日期 -->
+        <view class="form-row">
+          <view class="form-item half">
+            <text class="label required">记录日期</text>
+            <picker mode="date" value="{{errorInputData.record_date}}" bindchange="onErrorRecordDateChange">
+              <view class="picker-value">
+                <text class="picker-text">{{errorInputData.record_date || '请选择'}}</text>
+                <text class="picker-arrow">▼</text>
+              </view>
+            </picker>
+          </view>
+        </view>
+
+        <!-- 错题分析 -->
+        <view class="section-title">错题分析</view>
+
+        <!-- 第四行：错题原因 + 错题根因 -->
+        <view class="form-row">
+          <view class="form-item half">
+            <text class="label required">错题原因</text>
+            <picker mode="selector" range="{{errorMistakeReasons}}" range-key="text" bindchange="onErrorMistakeReasonChange">
+              <view class="picker-value">
+                <text class="picker-text">{{errorInputData.mistake_reason || '请选择'}}</text>
+                <text class="picker-arrow">▼</text>
+              </view>
+            </picker>
+          </view>
+          
+          <view class="form-item half">
+            <text class="label required">错题根因</text>
+            <picker mode="selector" range="{{errorMistakeReasonSubtypes}}" range-key="text" bindchange="onErrorMistakeReasonSubtypeChange">
+              <view class="picker-value">
+                <text class="picker-text">{{errorInputData.mistake_reason_subtype || '请选择'}}</text>
+                <text class="picker-arrow">▼</text>
+              </view>
+            </picker>
+          </view>
+        </view>
+
+        <!-- 题目内容 -->
+        <view class="section-title">题目内容</view>
+
+        <!-- 错题内容 -->
+        <view class="form-item full-width">
+          <text class="label required">错题描述</text>
+          <textarea
+            class="textarea"
+            placeholder="请输入错题的具体内容..."
+            value="{{errorInputData.question_content}}"
+            bindinput="onErrorInputChange"
+            data-field="question_content"
+            maxlength="300"
+            show-confirm-bar="{{false}}" />
+          <text class="char-count">{{errorInputData.question_content.length}}/300</text>
+        </view>
+
+        <!-- 解题思路与答案 -->
+        <view class="form-item full-width">
+          <text class="label">解题思路与答案</text>
+          <textarea 
+            class="textarea" 
+            placeholder="请输入正确的解题思路和答案..."
+            value="{{errorInputData.solution_content}}"
+            bindinput="onErrorInputChange" 
+            data-field="solution_content"
+            maxlength="300" 
+            show-confirm-bar="{{false}}" />
+          <text class="char-count">{{errorInputData.solution_content.length}}/300</text>
+        </view>
+
+        <!-- 错题图片上传 -->
+        <view class="form-item full-width">
+          <text class="label">错题图片</text>
+          <view class="image-upload">
+            <view class="image-list">
+              <view class="image-item" wx:for="{{errorInputData.solution_image}}" wx:key="*this">
+                <image class="uploaded-img" src="{{item.startsWith('http') ? item : baseUrl+item}}" mode="aspectFill" bindtap="onErrorImagePreview"
+                  data-url="{{item}}" />
+                <view class="delete-btn" bindtap="onDeleteErrorImage" data-index="{{index}}">×</view>
+              </view>
+              <view class="add-image" wx:if="{{!errorInputData.solution_image || errorInputData.solution_image.length < 9}}" bindtap="onChooseErrorImage">
+                <text class="add-icon">+</text>
+                <text class="add-text">添加图片</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="modal-footer modal-footer-vertical">
+        <view class="continue-add-option">
+          <text class="continue-label" bindtap="onToggleContinueAddError">保存后继续添加</text>
+          <checkbox class="continue-checkbox" checked="{{continueAddError}}" bindtap="onToggleContinueAddError" />
+        </view>
+        <view class="footer-buttons">
+          <button class="cancel-btn" bindtap="onCancelErrorInput">取消</button>
+          <button class="save-btn" bindtap="onSaveError">保存</button>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

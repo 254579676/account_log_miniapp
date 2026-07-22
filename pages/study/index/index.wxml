@@ -1,0 +1,177 @@
+<view class="container">
+  <!-- 顶部学生选择器 -->
+  <view class="student-selector-card" wx:if="{{dataLoaded && children.length > 0}}">
+    <view class="student-content" bindtap="onShowStudentPicker">
+      <image class="student-avatar" src="{{currentChild.avatar_url || '/assets/icons/child.png'}}" />
+      <text class="student-name">{{currentChild.name}}</text>
+      <text class="student-grade">{{currentChild.grade}} {{currentChild.class}}</text>
+      <text class="student-school">{{currentChild.school}}</text>
+      <text class="switch-icon">⇄</text>
+    </view>
+    <view class="add-btn" bindtap="onAddChild">➕</view>
+  </view>
+
+  <!-- 学生选择弹窗 -->
+  <view class="student-picker-modal" wx:if="{{showStudentPicker}}" bindtap="onHideStudentPicker">
+    <view class="picker-content" catchtap="stopPropagation">
+      <view class="picker-header">
+        <text class="picker-title">选择学生</text>
+        <text class="close-btn" bindtap="onHideStudentPicker">×</text>
+      </view>
+      
+      <scroll-view class="picker-scroll" scroll-y="true">
+        <view class="picker-list">
+          <view 
+            class="picker-item {{currentChild && currentChild.id === item.id ? 'active' : ''}}" 
+            wx:for="{{children}}" 
+            wx:key="id"
+            bindtap="onSelectStudent"
+            data-student="{{item}}"
+          >
+            <image class="picker-avatar" src="{{item.avatar_url || '/assets/icons/child.png'}}" />
+            <view class="picker-info">
+              <text class="picker-name">{{item.name}}</text>
+              <text class="picker-details">{{item.grade}} {{item.class}} · {{item.school}}</text>
+            </view>
+            <text class="picker-check" wx:if="{{currentChild && currentChild.id === item.id}}">✓</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 无学生提示 -->
+  <view class="no-child-card" wx:elif="{{dataLoaded && children.length === 0}}">
+    <image class="empty-icon" src="/assets/icons/child.png" />
+    <text class="empty-text">还没有添加学生</text>
+    <text class="empty-desc">点击下方按钮添加第一个学生</text>
+    <button class="add-first-btn" bindtap="onAddChild">添加第一个学生</button>
+  </view>
+
+  <!-- 今日学习概览 -->
+  <view class="overview-card" wx:if="{{dataLoaded}}">
+    <view class="card-header">
+      <text class="card-title">今日学习</text>
+      <text class="card-date">{{currentDate}} {{currentWeek}}</text>
+    </view>
+
+    <view wx:if="{{children.length > 0}}">
+      <!-- 每日鼓励诗词 -->
+      <view class="daily-quote">
+        <text class="quote-text">{{dailyQuote}}</text>
+      </view>
+
+      <view class="overview-grid">
+        <view class="overview-item">
+          <view class="overview-icon homework-icon">📝</view>
+          <view class="overview-data">
+            <text class="overview-value">{{todayStats.homeworkCompleted}}/{{todayStats.homeworkTotal}}</text>
+            <text class="overview-label">作业完成</text>
+          </view>
+        </view>
+
+        <view class="overview-item">
+          <view class="overview-icon time-icon">⏱️</view>
+          <view class="overview-data">
+            <text class="overview-value">{{todayStats.studyTime}}</text>
+            <text class="overview-label">学习时长</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:else>
+      <image class="empty-icon" src="/assets/icons/empty-homework.png" />
+      <text class="empty-text">添加学生后查看今日学习</text>
+    </view>
+  </view>
+
+  <!-- 学习功能入口 -->
+  <view class="function-card" wx:if="{{dataLoaded}}">
+    <view class="card-header">
+      <text class="card-title">学习功能</text>
+    </view>
+
+    <view class="function-grid">
+      <view class="function-item" bindtap="onHomeworkTap">
+        <view class="function-icon homework-bg">
+          <text class="icon-text">📝</text>
+        </view>
+        <text class="function-title">作业打卡</text>
+        <text class="function-desc">拍照记录每日作业</text>
+      </view>
+
+      <view class="function-item" bindtap="onExamTap">
+        <view class="function-icon exam-bg">
+          <text class="icon-text">📊</text>
+        </view>
+        <text class="function-title">考试记录</text>
+        <text class="function-desc">记录考试成绩和试卷</text>
+      </view>
+
+      <view class="function-item" bindtap="onErrorAnalysisTap">
+        <view class="function-icon error-bg">
+          <text class="icon-text">❌</text>
+        </view>
+        <text class="function-title">错题记录</text>
+        <text class="function-desc">记录错题和归类分析</text>
+      </view>
+
+      <view class="function-item" bindtap="onScoreAnalysisTap">
+        <view class="function-icon score-bg">
+          <text class="icon-text">📈</text>
+        </view>
+        <text class="function-title">成绩分析</text>
+        <text class="function-desc">查看成绩趋势和统计</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 近期考试 -->
+  <view class="activity-card" wx:if="{{dataLoaded}}">
+    <view class="card-header">
+      <text class="card-title">近期考试</text>
+    </view>
+
+    <view wx:if="{{children.length > 0}}">
+      <view class="exam-list">
+        <view class="exam-item simple" wx:for="{{recentExams}}" wx:key="id" bindtap="onExamTap" data-exam="{{item}}">
+          <view class="exam-main-info">
+            <view class="exam-left">
+              <text class="exam-name">{{item.exam_name}}</text>
+              <text class="exam-subject">{{item.subject_name || item.subject}} · {{item.exam_type}}</text>
+            </view>
+            <view class="exam-right">
+              <text class="score">{{item.score}}</text>
+              <text class="total-score">/{{item.total_score}}</text>
+            </view>
+          </view>
+
+          <view class="exam-footer">
+            <text class="date">{{item.exam_date}}</text>
+            <view class="footer-right">
+              <view class="image-icon" wx:if="{{item.images && item.images.length > 0}}" bindtap="onImagePreview"
+                data-url="{{baseUrl+item.images[0]}}" data-urls="{{item.images}}">
+                <text class="icon-text">📷</text>
+                <text class="icon-count">{{item.images.length}}</text>
+              </view>
+              <text class="ranking" wx:if="{{item.grade_ranking}}">年级第{{item.grade_ranking}}名</text>
+              <text class="ranking" wx:elif="{{item.class_ranking}}">班级第{{item.class_ranking}}名</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-state" wx:if="{{recentExams.length === 0}}">
+        <image class="empty-icon" src="/assets/icons/empty-homework.png" />
+        <text class="empty-text">还没有考试记录</text>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:else>
+      <image class="empty-icon" src="/assets/icons/empty-homework.png" />
+      <text class="empty-text">添加学生后查看近期考试</text>
+    </view>
+  </view>
+</view>

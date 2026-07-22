@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "作业打卡",
+  "usingComponents": {
+    "calendar": "/components/calendar/calendar"
+  }
+}

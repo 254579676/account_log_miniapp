@@ -1,0 +1,157 @@
+.calendar-container {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0;
+  margin-bottom: 20rpx;
+}
+
+.calendar-header-btn {
+  width: 50rpx;
+  height: 50rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f5f5f5;
+  font-size: 32rpx;
+  color: #666;
+}
+
+.calendar-header-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.calendar-weekdays {
+  display: flex;
+  padding: 10rpx 0;
+  border-bottom: 1rpx solid #eee;
+}
+
+.weekday {
+  flex: 1;
+  text-align: center;
+  font-size: 24rpx;
+  color: #999;
+  padding: 10rpx 0;
+}
+
+.calendar-days {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 10rpx 0;
+}
+
+.day-item {
+  width: 14.28%; /* 100% / 7 */
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.day-inner {
+  width: 70rpx;
+  height: 70rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 28rpx;
+  color: #333;
+  transition: all 0.2s;
+}
+
+.day-inner.disabled {
+  color: #ccc;
+  background: transparent;
+}
+
+.day-inner.normal {
+  color: #333;
+}
+
+.day-inner.today {
+  background: #e3f2fd;
+  color: #1976d2;
+  font-weight: bold;
+}
+
+.day-inner.selected {
+  background: #1976d2;
+  color: white;
+  font-weight: bold;
+}
+
+.day-inner.range {
+  background: rgba(25, 118, 210, 0.1);
+  color: #1976d2;
+  border-radius: 0;
+  width: 100%;
+}
+
+.day-inner.start-range {
+  border-radius: 50% 0 0 50%;
+  background: #1976d2;
+  color: white;
+}
+
+.day-inner.end-range {
+  border-radius: 0 50% 50% 0;
+  background: #1976d2;
+  color: white;
+}
+
+.day-inner.start-end-range {
+  border-radius: 50%;
+  background: #1976d2;
+  color: white;
+}
+
+.day-dot {
+  position: absolute;
+  bottom: 8rpx;
+  width: 6rpx;
+  height: 6rpx;
+  border-radius: 50%;
+  background: #ff4d4f;
+}
+
+.navigation-buttons {
+  display: flex;
+  justify-content: space-between;
+  padding: 20rpx;
+  gap: 20rpx;
+}
+
+.nav-btn {
+  flex: 1;
+  height: 70rpx;
+  border-radius: 10rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+}
+
+.cancel-btn {
+  border: 1rpx solid #ddd;
+  background: #fff;
+  color: #666;
+}
+
+.confirm-btn {
+  background: #1976d2;
+  color: white;
+  border: none;
+}

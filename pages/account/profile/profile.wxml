@@ -1,0 +1,190 @@
+<!-- pages/profile/profile.wxml -->
+<view class="container">
+  <!-- 用户信息卡片 -->
+  <view class="user-card">
+    <view class="user-avatar">
+      <image src="/assets/icons/crown.png" class="crown-icon" mode="aspectFit" wx:if="{{userInfo}}"></image>
+      <image src="/assets/icons/user-def.png" class="avatar-image" mode="aspectFill"></image>
+    </view>
+    <view class="user-info">
+      <view class="user-name">
+        <text type="userNickName">{{userInfo && userInfo.nickname ? userInfo.nickname : '访客用户'}}</text>
+      </view>
+      <view class="user-id">{{userInfo && userInfo.userid ? 'ID: ' + userInfo.userid : '登录查看信息'}}</view>
+    </view>
+    <!-- <view class="vip-tag">
+      <button class="login-btn" >{{userInfo ? 'VIP会员' : '普通会员'}}</button>
+    </view> -->
+    <!-- 登录/注册按钮 或 已登录用户信息 -->
+    <!-- <view class="auth-section">
+      <view wx:if="{{!isUserLoggedIn}}" class="login-register-section">
+        <button class="login-btn" bindtap="showLoginModal">登录/注册</button>
+      </view>
+      
+      <view wx:else class="user-logged-in-section">
+        <view class="logged-in-info">
+          <button class="logout-btn" bindtap="handleLogout">退出登录</button>
+        </view>
+      </view>
+    </view> -->
+    <!-- 微信登录 -->
+    <view class="auth-section" wx:if="{{!isUserLoggedIn}}">
+      <button class="login-btn" bindtap="onWechatLogin">微信登录</button>
+    </view>
+  </view>
+  
+  <!-- 账户概览 -->
+  <view class="account-overview">
+    <view class="overview-item">
+      <view class="overview-value">{{totalDays}}</view>
+      <view class="overview-label">记账天数</view>
+    </view>
+    <view class="overview-item">
+      <view class="overview-value">{{totalRecords}}</view>
+      <view class="overview-label">记录笔数</view>
+    </view>
+    <view class="overview-item">
+      <view class="overview-value">{{totalCategories}}</view>
+      <view class="overview-label">使用分类</view>
+    </view>
+  </view>
+  
+  <!-- 功能列表 -->
+  <view class="feature-list">
+    <view class="feature-group">
+      <view class="feature-item" bindtap="navigateToStudentManage">
+        <view class="feature-icon">
+          <image src="/assets/icons/user-def.png" class="icon" mode="aspectFit"></image>
+        </view>
+        <view class="feature-info">
+          <view class="feature-name">学生管理</view>
+          <view class="feature-desc">添加、编辑、删除学生信息</view>
+        </view>
+        <view class="feature-arrow">
+          <image src="/assets/icons/chevron-right.png" class="icon" mode="aspectFit"></image>
+        </view>
+      </view>
+      
+      <view class="feature-item" bindtap="navigateTo" data-url="/pages/account/budget/budget?type=expense">
+        <view class="feature-icon">
+          <image src="/assets/icons/wallet.png" class="icon" mode="aspectFit"></image>
+        </view>
+        <view class="feature-info">
+          <view class="feature-name">预算设置</view>
+          <view class="feature-desc">合理规划您的支出</view>
+        </view>
+        <view class="feature-arrow">
+          <image src="/assets/icons/chevron-right.png" class="icon" mode="aspectFit"></image>
+        </view>
+      </view>
+      
+      <view class="feature-item" bindtap="navigateTo" data-url="/pages/account/profile/data-export">
+        <view class="feature-icon">
+          <image src="/assets/icons/file-export.png" class="icon" mode="aspectFit"></image>
+        </view>
+        <view class="feature-info">
+          <view class="feature-name">数据导出</view>
+          <view class="feature-desc">导出账单数据</view>
+        </view>
+        <view class="feature-arrow">
+          <image src="/assets/icons/chevron-right.png" class="icon" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+    
+    <view class="feature-group">
+      <view class="feature-item" bindtap="navigateTo" data-url="/pages/account/profile/settings">
+        <view class="feature-icon">
+          <image src="/assets/icons/cog.png" class="icon" mode="aspectFit"></image>
+        </view>
+        <view class="feature-info">
+          <view class="feature-name">设置</view>
+        </view>
+        <view class="feature-arrow">
+          <image src="/assets/icons/chevron-right.png" class="icon" mode="aspectFit"></image>
+        </view>
+      </view>
+      
+      <view class="feature-item" bindtap="navigateTo" data-url="/pages/account/profile/feedback">
+        <view class="feature-icon">
+          <image src="/assets/icons/comment.png" class="icon" mode="aspectFit"></image>
+        </view>
+        <view class="feature-info">
+          <view class="feature-name">意见反馈</view>
+        </view>
+        <view class="feature-arrow">
+          <image src="/assets/icons/chevron-right.png" class="icon" mode="aspectFit"></image>
+        </view>
+      </view>
+      
+      <view class="feature-item" bindtap="navigateTo" data-url="/pages/account/profile/about">
+        <view class="feature-icon">
+          <image src="/assets/icons/info-circle.png" class="icon" mode="aspectFit"></image>
+        </view>
+        <view class="feature-info">
+          <view class="feature-name">关于我们</view>
+        </view>
+        <view class="feature-arrow">
+          <image src="/assets/icons/chevron-right.png" class="icon" mode="aspectFit"></image>
+        </view>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 登录/注册弹窗 -->
+  <view class="modal" wx:if="{{showModal}}">
+    <view class="modal-mask" bindtap="hideModal"></view>
+    <view class="modal-content">
+      <view class="modal-header">
+        <view class="modal-title">{{isLoginMode ? '用户登录' : '用户注册'}}</view>
+        <view class="close-btn" bindtap="hideModal">
+          <image src="/assets/icons/close.png" class="close-icon" mode="aspectFit"></image>
+        </view>
+      </view>
+      
+      <view class="modal-body">
+        <!-- 登录表单 -->
+        <view wx:if="{{isLoginMode}}">
+          <view class="form-group">
+            <input class="form-input" type="text" placeholder="请输入邮箱" value="{{loginEmail}}" bindinput="onLoginEmailInput" />
+          </view>
+          <view class="form-group">
+            <input class="form-input" type="password" placeholder="请输入密码" value="{{loginPassword}}" bindinput="onLoginPasswordInput" password="true"/>
+          </view>
+          <view class="remember-me">
+            <label class="remember-me-label">
+              <checkbox value="{{rememberMe}}" bindchange="onRememberMeChange" checked="{{rememberMe}}" />
+              <text class="remember-me-text">记住我</text>
+            </label>
+          </view>
+        </view>
+        
+        <!-- 注册表单 -->
+        <view wx:else>
+          <view class="form-group">
+            <input class="form-input" type="text" placeholder="请输入用户名2~20字符" value="{{registerUsername}}" bindinput="onRegisterUsernameInput" />
+          </view>
+          <view class="form-group">
+            <input class="form-input" type="email" placeholder="请输入邮箱" value="{{registerEmail}}" bindinput="onRegisterEmailInput" />
+          </view>
+          <view class="form-group">
+            <input class="form-input" type="password" placeholder="请输入密码6~20字符,字母+数字组合" value="{{registerPassword}}" bindinput="onRegisterPasswordInput" password="true" />
+          </view>
+          <view class="form-group">
+            <input class="form-input" type="password" placeholder="请确认密码" value="{{registerConfirmPassword}}" bindinput="onRegisterConfirmPasswordInput" password="true" />
+          </view>
+        </view>
+      </view>
+      
+      <view class="modal-footer">
+        <button class="cancel-btn" bindtap="hideModal">取消</button>
+        <button class="confirm-btn" bindtap="onConfirm">{{isLoginMode ? '登录' : '注册'}}</button>
+      </view>
+      
+      <view class="switch-mode">
+        <text>{{isLoginMode ? '没有账号？' : '已有账号？'}}</text>
+        <text class="switch-text" bindtap="switchMode">{{isLoginMode ? '立即注册' : '立即登录'}}</text>
+      </view>
+    </view>
+  </view>
+</view>

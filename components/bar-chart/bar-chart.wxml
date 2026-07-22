@@ -1,0 +1,10 @@
+<view class="chart-container">
+  <canvas
+    canvas-id="{{chartId}}"
+    class="chart-canvas"
+    style="width: {{canvasWidth}}px; height: {{canvasHeight}}px;"
+    bindtouchstart="{{enableTouch ? 'onTouchStart' : ''}}"
+    bindtouchmove="{{enableTouch ? 'onTouchMove' : ''}}"
+    bindtouchend="{{enableTouch ? 'onTouchEnd' : ''}}"
+  ></canvas>
+</view>

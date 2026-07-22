@@ -1,0 +1,47 @@
+<view class="container">
+  <scroll-view scroll-y class="scroll-content" style="height: calc(100vh - 240rpx)">
+    <view class="time-selector">
+      <picker mode="selector" range="{{years}}" value="{{years.indexOf(currentYear)}}" bindchange="handleYearChange">
+        <view class="picker">{{currentYear}}年</view>
+      </picker>
+      <picker mode="selector" range="{{months}}" value="{{months.indexOf(currentMonth)}}" bindchange="handleMonthChange">
+        <view class="picker">{{currentMonth}}月</view>
+      </picker>
+    </view>
+
+    <view class="tabs">
+      <block wx:for="{{categories}}" wx:key="index">
+        <view class="tab {{activeTab === index ? 'active' : ''}}" bindtap="handleTabChange" data-index="{{index}}">
+          <image src="/assets/icons/{{item.icon}}.png" class="tab-icon"></image>
+          <text>{{item.name}}</text>
+        </view>
+      </block>
+    </view>
+
+    <view class="budget-list" wx:if="{{budgets.length > 0}}">
+      <view class="list-title">当前月份已设置预算</view>
+      <movable-area class="movable-area" wx:for="{{budgets}}" wx:key="name">
+        <movable-view class="movable-view"  wx:key="{{refreshFlag}}" direction="horizontal" out-of-bounds="false">
+          <view class="list-item">
+            <image src="/assets/icons/{{item.icon}}.png" class="item-icon"></image>
+            <text class="item-name">{{item.iconName}}</text>
+            <text class="item-budget">{{item.amount}}元</text>
+          </view>
+          <view class="delete-btn" bindtap="handleDeleteBudget" data-id="{{item.id}}">删除</view>
+        </movable-view>
+      </movable-area>
+    </view>
+  </scroll-view>
+
+  <view class="budget-form">
+    <view class="form-item" wx:if="{{currentBudget}}">
+      <view class="form-label">
+        <image src="{{currentBudget && currentBudget.categoryIcon ? '/assets/icons/' + currentBudget.categoryIcon + '.png' : '/assets/icons/close.png'}}" class="label-icon"></image>
+        <text>{{currentBudget.categoryName}}预算</text>
+      </view>
+      <input type="number" placeholder="请输入预算金额" value="{{currentBudget.amount}}" bindinput="handleBudgetChange" data-index="{{activeTab}}" />
+      <text class="unit">元</text>
+      <button class="form-save-btn" bindtap='saveBudget'>保存</button>
+    </view>
+  </view>
+</view>

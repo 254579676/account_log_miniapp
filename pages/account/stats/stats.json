@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "统计",
+  "usingComponents": {
+    "native-pie-chart": "/components/native-pie-chart/native-pie-chart",
+    "native-bar-chart": "/components/native-bar-chart/native-bar-chart"
+  }
+}

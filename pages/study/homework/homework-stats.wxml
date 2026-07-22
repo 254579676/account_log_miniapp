@@ -1,0 +1,156 @@
+<view class="container">
+  <!-- 顶部信息 -->
+  <view class="header-info">
+    <view class="child-info">
+      <image class="child-avatar" src="{{currentChild.avatar || '/assets/icons/child.png'}}" />
+      <view class="child-details">
+        <text class="child-name">{{currentChild.name}}</text>
+        <text class="page-title">{{currentChild.grade || ''}}{{currentChild.class || '未设置班级'}} · {{currentChild.school || '未设置学校'}}</text>
+      </view>
+    </view>
+    <view class="period-selector">
+      <view class="period-tabs">
+        <view 
+          class="period-tab {{selectedPeriod === '本周' ? 'active' : ''}}" 
+          bindtap="onQuickPeriodSelect" 
+          data-period="本周"
+        >
+          本周
+        </view>
+        <view 
+          class="period-tab {{selectedPeriod === '本月' ? 'active' : ''}}" 
+          bindtap="onQuickPeriodSelect" 
+          data-period="本月"
+        >
+          本月
+        </view>
+        <view 
+          class="period-tab {{selectedPeriod === '本年' ? 'active' : ''}}" 
+          bindtap="onQuickPeriodSelect" 
+          data-period="本年"
+        >
+          本年
+        </view>
+        <view 
+          class="period-tab {{selectedPeriod === '自定义' ? 'active' : ''}}" 
+          bindtap="onShowCustomDatePicker"
+          data-period="自定义"
+        >
+          自定义
+        </view>
+      </view>
+      
+    </view>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-section">
+    <view class="stats-grid">
+      <view class="stat-card">
+        <text class="stat-number">{{stats.totalHomework}}</text>
+        <text class="stat-label">总作业数</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-number">{{stats.completedHomework}}</text>
+        <text class="stat-label">已完成</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-number">{{stats.completionRate}}%</text>
+        <text class="stat-label">完成率</text>
+      </view>
+      <view class="stat-card">
+        <text class="stat-number">{{stats.totalTime}}</text>
+        <text class="stat-label">总用时(分)</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 图表统计 -->
+  <view class="chart-section" wx:if="{{chartData.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">作业趋势</text>
+      <text class="section-subtitle">最近7天</text>
+    </view>
+    
+    <view class="chart-container">
+      <view class="chart-bars">
+        <view class="bar-item" wx:for="{{chartData}}" wx:key="date">
+          <view class="bar-wrapper">
+            <view class="bar bar-completed" style="height: {{item.completedHeight}}%"></view>
+            <view class="bar bar-total" style="height: {{item.totalHeight}}%"></view>
+          </view>
+          <text class="bar-label">{{item.dateFormatted}}</text>
+        </view>
+      </view>
+      
+      <view class="chart-legend">
+        <view class="legend-item">
+          <view class="legend-color legend-color-completed"></view>
+          <text class="legend-text">已完成</text>
+        </view>
+        <view class="legend-item">
+          <view class="legend-color legend-color-total"></view>
+          <text class="legend-text">总作业</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 科目统计 -->
+  <view class="subject-section">
+    <view class="section-header">
+      <text class="section-title">科目统计</text>
+    </view>
+    
+    <view class="subject-list">
+      <view class="subject-item" wx:for="{{stats.subjectStatsList}}" wx:key="subjectName">
+        <view class="subject-row">
+          <text class="subject-name">{{item.subjectName}}</text>
+          <view class="progress-bar">
+            <view class="progress-fill" style="{{item.progressStyle}}"></view>
+          </view>
+          <text class="progress-text">完成:{{item.completed}}/总项:{{item.total}}</text>
+        </view>
+        <view class="subject-time" wx:if="{{item.totalTime > 0}}">
+          <text class="time-text">用时 {{item.totalTime}}分钟</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons" wx:if="{{stats.totalHomework > 0}}">
+    <button class="export-btn" bindtap="onExportStats">
+      <text class="btn-icon">📊</text>
+      导出统计
+    </button>
+    <button class="refresh-btn" bindtap="onRefreshData">
+      <text class="btn-icon">🔄</text>
+      刷新数据
+    </button>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{stats.totalHomework === 0}}">
+    <image class="empty-icon" src="/assets/icons/empty-homework.png" />
+    <text class="empty-text">暂无作业数据</text>
+    <text class="empty-desc">开始记录作业来查看统计</text>
+  </view>
+
+  <!-- 自定义时间选择器弹窗 -->
+  <view class="modal-mask" wx:if="{{showCalendar}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">选择日期范围</text>
+        <view class="close-btn" bindtap="onHideCalendar">×</view>
+      </view>
+      <calendar 
+        show="{{showCalendar}}" 
+        start-date="{{customStartDate}}"
+        end-date="{{customEndDate}}"
+        bind:cancel="onHideCalendar"
+        bind:confirm="onCalendarConfirm">
+      </calendar>
+    </view>
+  </view>
+</view>

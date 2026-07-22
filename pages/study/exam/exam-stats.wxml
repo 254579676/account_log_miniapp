@@ -1,0 +1,144 @@
+<view class="container">
+  <!-- 顶部学生信息展示 -->
+  <view class="header-section">
+    <view class="student-selector">
+      <view class="current-student" bindtap="onShowStudentPicker">
+        <image class="student-avatar" src="{{currentChild.avatar_url || '/assets/icons/child.png'}}" />
+        <view class="student-info">
+          <text class="student-name">{{currentChild.name}}</text>
+          <text class="student-grade">{{currentChild.grade || ''}} {{currentChild.class || ''}}-{{currentChild.school || ''}}</text>
+        </view>
+        <text class="selector-arrow">▼</text>
+      </view>
+    </view>
+    
+    <!-- 年级选择器 -->
+    <view class="grade-selector">
+      <picker mode="selector" range="{{gradeOptions}}" value="{{selectedGradeIndex}}" bindchange="onGradeChange">
+        <view class="picker">
+          <text class="picker-text">{{selectedGrade || '选择年级'}}</text>
+          <text class="picker-arrow">▼</text>
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 综合考试统计数据 -->
+  <view class="stats-section" wx:if="{{comprehensiveChartData.length > 0}}">
+    <view class="stats-title">综合考试统计</view>
+    <view class="stats-grid">
+      <view class="stats-item">
+        <text class="stats-label">最高分</text>
+        <text class="stats-value">{{comprehensiveStats.highestScore}}</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-label">平均分</text>
+        <text class="stats-value">{{comprehensiveStats.avgScore}}</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-label">最低分</text>
+        <text class="stats-value">{{comprehensiveStats.lowestScore}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 综合考试总分曲线图 -->
+  <view class="chart-section">
+    <view class="chart-header">
+      <text class="chart-title">综合考试总分趋势</text>
+      <view class="chart-controls">
+        <text class="control-btn {{chartPeriod === 'year' ? 'active' : ''}}"
+              bindtap="onChartPeriodChange" data-period="year">学年</text>
+      </view>
+    </view>
+
+    <view class="chart-container {{showStudentPicker ? 'hidden' : ''}}">
+      <bar-chart
+        chart-id="comprehensiveChart"
+        chart-data="{{comprehensiveChartData}}"
+        chart-title="综合考试总分趋势"
+        bar-color="#2196F3"
+        enable-touch="{{!showStudentPicker}}"
+        bind:bartouch="onComprehensiveBarTouch"
+        bind:bartouchend="onBarTouchEnd">
+      </bar-chart>
+    </view>
+  </view>
+
+  <!-- 单科成绩统计数据 -->
+  <view class="stats-section" wx:if="{{subjectChartData.length > 0}}">
+    <view class="stats-title">单科成绩统计 ({{selectedSubject}})</view>
+    <view class="stats-grid">
+      <view class="stats-item">
+        <text class="stats-label">最高分</text>
+        <text class="stats-value">{{subjectStats.highestScore}}</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-label">平均分</text>
+        <text class="stats-value">{{subjectStats.avgScore}}</text>
+      </view>
+      <view class="stats-item">
+        <text class="stats-label">最低分</text>
+        <text class="stats-value">{{subjectStats.lowestScore}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 单科成绩曲线图 -->
+  <view class="chart-section">
+    <view class="chart-header">
+      <text class="chart-title">单科成绩趋势</text>
+      <view class="chart-controls">
+        <picker mode="selector" range="{{subjectOptions}}" value="{{selectedSubjectIndex}}" bindchange="onSubjectChange">
+          <view class="subject-picker">
+            <text class="picker-text">{{selectedSubject || '选择科目'}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="chart-container {{showStudentPicker ? 'hidden' : ''}}">
+      <bar-chart
+        chart-id="subjectChart"
+        chart-data="{{subjectChartData}}"
+        chart-title="单科成绩趋势"
+        bar-color="#4CAF50"
+        enable-touch="{{!showStudentPicker}}"
+        bind:bartouch="onSubjectBarTouch"
+        bind:bartouchend="onBarTouchEnd">
+      </bar-chart>
+    </view>
+  </view>
+
+
+
+  <!-- 学生选择弹窗 -->
+  <view class="modal-mask" wx:if="{{showStudentPicker}}" bindtap="onHideStudentPicker">
+    <view class="modal-content" catchtap="onModalContentTap">
+      <view class="modal-header">
+        <text class="modal-title">选择学生</text>
+        <text class="close-btn" bindtap="onHideStudentPicker">×</text>
+      </view>
+      <scroll-view scroll-y class="student-list">
+        <view class="student-option {{item.id === currentChild.id ? 'active' : ''}}"
+              wx:for="{{childrenList}}" wx:key="id"
+              bindtap="onSelectStudent" data-student="{{item}}">
+          <image class="option-avatar" src="{{item.avatar_url || '/assets/icons/child.png'}}" />
+          <view class="option-info">
+            <text class="option-name">{{item.name}}</text>
+            <text class="option-grade">{{item.grade || ''}} {{item.class || ''}}-{{item.school || ''}}</text>
+          </view>
+          <view class="option-check" wx:if="{{item.id === currentChild.id}}">✓</view>
+        </view>
+      </scroll-view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!hasData}}">
+    <image class="empty-icon" src="/assets/icons/empty-homework.png" />
+    <text class="empty-text">暂无考试数据</text>
+    <text class="empty-desc">选择学生和年级后查看统计图表</text>
+  </view>
+</view>

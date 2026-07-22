@@ -1,0 +1,8 @@
+<view class="chart-container">
+  <!-- <ec-canvas 
+    id="mychart" 
+    canvas-id="mychart-canvas" 
+    ec="{{ ec }}"
+    type='2d'
+  ></ec-canvas> -->
+</view>

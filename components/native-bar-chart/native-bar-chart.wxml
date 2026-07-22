@@ -1,0 +1,14 @@
+<view class="bar-chart-container">
+  <canvas 
+    class="bar-canvas" 
+    canvas-id="{{canvasId}}" 
+    id="{{canvasId}}"
+    type="2d"
+    style="width: {{width}}px; height: {{height}}px;"
+    bindtap="onCanvasTap">
+  </canvas>
+  
+  <view class="no-data" wx:if="{{!hasData}}">
+    暂无数据
+  </view>
+</view>

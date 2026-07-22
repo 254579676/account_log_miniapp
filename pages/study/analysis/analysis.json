@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "错题分析",
+  "navigationBarBackgroundColor": "#2E7D32",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#f5f5f5",
+  "enablePullDownRefresh": false,
+  "backgroundTextStyle": "dark",
+  "usingComponents": {
+    "bar-chart": "/components/bar-chart/bar-chart"
+  }
+}

@@ -1,0 +1,293 @@
+.container {
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  padding-bottom: 200rpx; /* 为底部按钮留出空间 */
+}
+
+/* 作业头部 */
+.homework-header {
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 20rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+}
+
+.subject-tag {
+  background: #3498db;
+  color: white;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.homework-type {
+  background: #f8f9fa;
+  color: #7168ec;
+  padding: 6rpx 12rpx;
+  border-radius: 10rpx;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 24rpx;
+  font-weight: 500;
+  font-weight: bold;
+}
+
+.status-badge.completed {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+/* 作业内容 */
+.homework-content {
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+}
+
+.title-section {
+  margin-bottom: 25rpx;
+}
+
+.homework-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #2c3e50;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+
+
+
+
+.description-section {
+  margin-bottom: 25rpx;
+}
+
+.description-text {
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+  display: block;
+}
+
+/* 图片区域 */
+.images-section,
+.completion-section {
+  margin-bottom: 25rpx;
+}
+
+.image-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15rpx;
+}
+
+.homework-image,
+.completion-image {
+  width: 200rpx;
+  height: 200rpx;
+  border-radius: 12rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.1);
+}
+
+.completion-image {
+  border: 2rpx solid #28a745;
+}
+
+/* 时间信息区域 */
+.time-info-section {
+  margin-bottom: 25rpx;
+}
+
+.time-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.time-input-item {
+  display: flex;
+  align-items: center;
+  gap: 15rpx;
+}
+
+.time-label {
+  font-size: 26rpx;
+  color: #5e5a5a;
+  font-weight: 500;
+  min-width: 180rpx;
+}
+
+.time-input {
+  flex: 1;
+  background: #f8f9fa;
+  border: 2rpx solid #e9ecef;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  text-align: center;
+  font-weight: 500;
+}
+
+.time-input:focus {
+  border-color: #3498db;
+  background: white;
+}
+
+.estimated-input {
+  color: #666;
+  background: #f8f9fa;
+}
+
+.actual-input {
+  color: #ff4757;
+}
+
+.actual-input:focus {
+  border-color: #ff4757;
+  background: white;
+}
+
+.unit {
+  font-size: 26rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+/* 时间区域 */
+.time-section {
+  margin-bottom: 25rpx;
+}
+
+.time-text {
+  font-size: 26rpx;
+  color: #666;
+  display: block;
+}
+
+/* 底部操作按钮 */
+.action-buttons {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  padding: 20rpx;
+  box-shadow: 0 -2rpx 8rpx rgba(0,0,0,0.1);
+  display: flex;
+  gap: 15rpx;
+}
+
+.checkin-btn {
+  flex: 1;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.complete-btn {
+  flex: 1;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.uncomplete-btn {
+  flex: 1;
+  background: #ffc107;
+  color: #333;
+  border: none;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+}
+
+.delete-btn {
+  flex: 1;
+  background: #ff4757;
+  color: white;
+  border: none;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+}
+
+.btn-icon {
+  font-size: 24rpx;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 200rpx 0;
+}
+
+.empty-icon {
+  width: 200rpx;
+  height: 200rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.5;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #666;
+  margin-bottom: 30rpx;
+}
+
+.back-btn {
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 12rpx;
+  padding: 20rpx 40rpx;
+  font-size: 28rpx;
+}
+

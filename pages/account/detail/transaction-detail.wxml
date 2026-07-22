@@ -1,0 +1,117 @@
+<!-- pages/detail/transaction-detail.wxml -->
+<view class="container">
+  <view class="detail-card">
+    <view class="amount-section {{transaction.type === 'expense' ? 'expense' : 'income'}}">
+      <view class="amount-label">{{transaction.type === 'expense' ? '支出' : '收入'}}</view>
+      <view class="amount-value">¥{{transaction.amount}}</view>
+    </view>
+    
+    <view class="detail-list">
+      <view class="detail-item">
+        <view class="detail-label">分类</view>
+        <view class="detail-value">
+          <view class="category-icon">
+            <image src="/assets/icons/{{transaction.categoryIcon || 'question-circle'}}.png" style="width: 32rpx; height: 32rpx;"></image>
+          </view>
+          <text>{{transaction.categoryName}}</text>
+        </view>
+      </view>
+      
+      <view class="detail-item">
+        <view class="detail-label">日期</view>
+        <view class="detail-value">{{transaction.date}}</view>
+      </view>
+      
+      <view class="detail-item">
+        <view class="detail-label">备注</view>
+        <view class="detail-value">{{transaction.description || '无备注'}}</view>
+      </view>
+    </view>
+    
+    <view class="action-buttons">
+      <button class="action-btn edit-btn" bindtap="editTransaction">
+        <image src="/assets/icons/pencil.png" style="width: 36rpx; height: 36rpx;"></image>
+        <text>编辑</text>
+      </button>
+      <button class="action-btn delete-btn" bindtap="deleteTransaction">
+        <image src="/assets/icons/trash.png" style="width: 36rpx; height: 36rpx;"></image>
+        <text>删除</text>
+      </button>
+    </view>
+  </view>
+</view>
+
+<!-- 编辑弹窗 -->
+<view class="edit-popup {{showEditPopup ? 'show' : ''}}">
+  <view class="edit-popup-mask" bindtap="hideEditPopup"></view>
+  <view class="edit-popup-content">
+    <view class="edit-popup-header">
+      <text>编辑账单</text>
+      <view class="edit-popup-close" bindtap="hideEditPopup">
+        <image src="/assets/icons/close.png" style="width: 30rpx; height: 30rpx;"></image>
+      </view>
+    </view>
+    
+    <view class="edit-popup-body">
+      <view class="form-group">
+        <view class="form-label">类型</view>
+        <view class="type-selector">
+          <view class="type-option {{editData.type === 'expense' ? 'active' : ''}}" bindtap="selectType" data-type="expense">
+            支出
+          </view>
+          <view class="type-option {{editData.type === 'income' ? 'active' : ''}}" bindtap="selectType" data-type="income">
+            收入
+          </view>
+        </view>
+      </view>
+      
+      <view class="form-group">
+        <view class="form-label">金额</view>
+        <input class="form-input" maxlength="12" type="digit" value="{{editData.amount}}" bindinput="onAmountInput" />
+      </view>
+      
+      <view class="form-group">
+        <view class="form-label">分类</view>
+        <picker bindchange="onCategoryChange" value="{{categoryIndex}}" range="{{categoryNames}}">
+          <view class="form-picker">
+            <text>{{categoryNames[categoryIndex]}}</text>
+            <image src="/assets/icons/chevron-down.png" style="width: 24rpx; height: 24rpx;"></image>
+          </view>
+        </picker>
+      </view>
+      
+      <view class="form-group">
+        <view class="form-label">日期</view>
+        <picker mode="date" value="{{editData.date}}" bindchange="onDateChange">
+          <view class="form-picker">
+            <text>{{editData.date}}</text>
+            <image src="/assets/icons/calendar.png" style="width: 30rpx; height: 30rpx;"></image>
+          </view>
+        </picker>
+      </view>
+      
+      <view class="form-group">
+        <view class="form-label">备注</view>
+        <input class="form-input" maxlength="20" placeholder="添加备注" value="{{editData.description}}" bindinput="onDescriptionInput" />
+      </view>
+    </view>
+    
+    <view class="edit-popup-footer">
+      <button class="btn btn-outline" bindtap="hideEditPopup">取消</button>
+      <button class="btn btn-primary" bindtap="saveEdit">保存</button>
+    </view>
+  </view>
+</view>
+
+<!-- 删除确认弹窗 -->
+<view class="confirm-popup {{showDeleteConfirm ? 'show' : ''}}">
+  <view class="confirm-popup-mask" bindtap="hideDeleteConfirm"></view>
+  <view class="confirm-popup-content">
+    <view class="confirm-popup-title">确认删除</view>
+    <view class="confirm-popup-message">确定要删除这条账单记录吗？</view>
+    <view class="confirm-popup-buttons">
+      <button class="btn btn-outline" bindtap="hideDeleteConfirm">取消</button>
+      <button class="btn btn-danger" bindtap="confirmDelete">删除</button>
+    </view>
+  </view>
+</view>

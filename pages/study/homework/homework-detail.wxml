@@ -1,0 +1,120 @@
+<view class="container" wx:if="{{homework}}">
+  <!-- 作业头部信息 -->
+  <view class="homework-header">
+    <view class="header-left">
+      <text class="subject-tag">{{homework.subject_name}}</text>
+      <text class="homework-type">{{homework.homework_type}}</text>
+    </view>
+    <view class="header-right">
+      <view class="status-badge {{homework.status === '已完成' ? 'completed' : 'pending'}}">
+        {{homework.status || '待完成'}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 作业内容 -->
+  <view class="homework-content">
+    <view class="title-section">
+      <text class="homework-title">{{homework.title}}</text>
+    </view>
+    
+    <view class="description-section" wx:if="{{homework.description}}">
+      <text class="section-title">作业内容</text>
+      <text class="description-text">{{homework.description}}</text>
+    </view>
+
+    <!-- 作业照片 -->
+    <view class="images-section" wx:if="{{homework.images && homework.images.length > 0}}">
+      <text class="section-title">作业照片</text>
+      <view class="image-grid">
+        <image class="homework-image" 
+               wx:for="{{homework.images}}" 
+               wx:key="*this"
+               src="{{item}}" 
+               mode="aspectFill"
+               bindtap="onImagePreview" 
+               data-url="{{item}}" />
+      </view>
+    </view>
+
+    <!-- 完成打卡照片 -->
+    <view class="completion-section" wx:if="{{homework.status === '已完成' && completionImages.length > 0}}">
+      <text class="section-title">完成打卡</text>
+      <view class="image-grid">
+        <image class="completion-image" 
+               wx:for="{{completionImages}}" 
+               wx:key="*this"
+               src="{{item}}" 
+               mode="aspectFill"
+               bindtap="onImagePreview" 
+               data-url="{{item}}" />
+      </view>
+    </view>
+
+    <!-- 完成时间 -->
+    <view class="time-section" wx:if="{{homework.status === '已完成' && homework.complete_time}}">
+      <text class="section-title">完成时间</text>
+      <text class="time-text">{{homework.complete_time}}</text>
+    </view>
+
+    <!-- 时间信息 -->
+    <view class="time-info-section">
+      <text class="section-title">作业耗时</text>
+      <view class="time-inputs">
+        <!-- 预计完成时间 -->
+        <view class="time-input-item">
+          <text class="time-label">预计完成时间</text>
+          <input class="time-input estimated-input" 
+                 type="number" 
+                 value="{{homework.estimated_time}}" 
+                 disabled="true" />
+          <text class="unit">分钟</text>
+        </view>
+        
+        <!-- 实际完成时间 -->
+        <view class="time-input-item">
+          <text class="time-label">实际完成时间 *</text>
+          <input class="time-input actual-input" 
+                 type="number" 
+                 placeholder="请输入实际完成时间" 
+                 value="{{actualTime}}" 
+                 bindinput="onActualTimeInput" 
+                 maxlength="3" />
+          <text class="unit">分钟</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作按钮 -->
+  <view class="action-buttons">
+    <!-- 拍照打卡按钮 -->
+    <button class="checkin-btn" bindtap="onCheckIn" wx:if="{{homework.status !== '已完成'}}">
+      <text class="btn-icon">📸</text>
+      拍照打卡
+    </button>
+    
+    <!-- 标记完成按钮 -->
+    <button class="complete-btn" bindtap="onToggleComplete" wx:if="{{homework.status !== '已完成'}}" disabled="{{isLoading}}">
+      标记完成
+    </button>
+    
+    <!-- 标记未完成按钮 -->
+    <button class="uncomplete-btn" bindtap="onToggleComplete" wx:if="{{homework.status === '已完成'}}" disabled="{{isLoading}}">
+      标记未完成
+    </button>
+    
+    <!-- 删除按钮 -->
+    <button class="delete-btn" bindtap="onDeleteHomework" disabled="{{isLoading}}">
+      <text class="btn-icon">🗑️</text>
+      删除作业
+    </button>
+  </view>
+</view>
+
+<!-- 空状态 -->
+<view class="empty-state" wx:if="{{!homework && !isLoading}}">
+  <image class="empty-icon" src="/assets/icons/empty-homework.png" />
+  <text class="empty-text">作业不存在</text>
+  <button class="back-btn" bindtap="onBack">返回</button>
+</view>

@@ -1,0 +1,121 @@
+<!-- pages/stats/stats.wxml -->
+<view class="container">
+  <!-- 时间筛选器 -->
+  <view class="date-filter">
+    <view class="filter-btn {{dateRange === 'week' ? 'active' : ''}}" bindtap="setDateRange" data-range="week">本周</view>
+    <view class="filter-btn {{dateRange === 'month' ? 'active' : ''}}" bindtap="setDateRange" data-range="month">本月</view>
+    <view class="filter-btn {{dateRange === 'year' ? 'active' : ''}}" bindtap="setDateRange" data-range="year">本年</view>
+    <view class="filter-btn {{dateRange === 'custom' ? 'active' : ''}}" bindtap="showCustomDatePicker">自定义</view>
+  </view>
+  
+  <!-- 自定义日期选择器 -->
+  <view class="custom-date-picker" wx:if="{{showDatePicker}}">
+    <view class="date-picker-header">
+      <text>选择日期范围</text>
+      <view class="close-btn" bindtap="hideDatePicker">
+        <image src="/assets/icons/cancel.png" class="icon" mode="aspectFit"></image>
+      </view>
+    </view>
+    <view class="date-picker-body">
+      <view class="date-item">
+        <text>开始日期</text>
+        <picker mode="date" value="{{startDate}}" bindchange="onStartDateChange">
+          <view class="date-value">
+            <text>{{startDate}}</text>
+            <image src="/assets/icons/calendar.png" class="icon" mode="aspectFit"></image>
+          </view>
+        </picker>
+      </view>
+      <view class="date-item">
+        <text>结束日期</text>
+        <picker mode="date" value="{{endDate}}" bindchange="onEndDateChange">
+          <view class="date-value">
+            <text>{{endDate}}</text>
+            <image src="/assets/icons/calendar.png" class="icon" mode="aspectFit"></image>
+          </view>
+        </picker>
+      </view>
+    </view>
+    <view class="date-picker-footer">
+      <button class="btn-confirm" bindtap="applyCustomDate">确定</button>
+    </view>
+  </view>
+  
+  <!-- 统计概览 -->
+  <view class="stats-overview">
+    <view class="overview-item">
+      <text class="overview-label">总支出</text>
+      <text class="overview-value expense">¥{{summary.totalExpense}}</text>
+    </view>
+    <view class="overview-item">
+      <text class="overview-label">总收入</text>
+      <text class="overview-value income">¥{{summary.totalIncome}}</text>
+    </view>
+    <view class="overview-item">
+      <text class="overview-label">结余</text>
+      <text class="overview-value {{summary.totalIncome - summary.totalExpense >= 0 ? 'income' : 'expense'}}">¥{{summary.balance}}</text>
+    </view>
+  </view>
+  
+  <!-- 类型切换 -->
+  <view class="type-tabs">
+    <view class="tab {{activeTab === 'expense' ? 'active' : ''}}" bindtap="switchTab" data-tab="expense">支出</view>
+    <view class="tab {{activeTab === 'income' ? 'active' : ''}}" bindtap="switchTab" data-tab="income">收入</view>
+  </view>
+  
+  <!-- 饼图区域 -->
+  <view class="chart-container">
+    <view class="chart-title">{{activeTab === 'expense' ? '支出' : '收入'}}分类占比</view>
+    <view style="display: flex; justify-content: center; align-items: center;">
+      <native-pie-chart 
+        canvas-id="pieChart"
+        width="300"
+        height="300"
+        type='2d'
+        center-text="{{activeTab === 'expense' ? '总支出' : '总收入'}}"
+        series="{{pieData}}"
+        show-center-text="{{true}}">
+      </native-pie-chart>
+    </view>
+  </view>
+  
+  <!-- 月度收支柱状图 -->
+  <view class="chart-container">
+    <view class="chart-title">月度收支统计</view>
+    <view style="display: flex; justify-content: center; align-items: center;">
+      <native-bar-chart
+        canvas-id="barChart"
+        type='2d'
+        width="400"
+        height="350"
+        x-labels="{{monthlyCategories}}"
+        series="{{barSeriesData}}">
+      </native-bar-chart>
+    </view>
+  </view>
+  
+  <!-- 分类明细 -->
+  <view class="category-list">
+    <view class="list-title">分类明细</view>
+    <block wx:for="{{categoryStats}}" wx:key="id">
+      <view class="category-item">
+        <view class="category-info">
+          <view class="category-icon">
+            <image src="/assets/icons/{{item.icon}}.png" class="icon" mode="aspectFit"></image>  
+          </view>
+          <view class="category-name">{{item.name}}</view>
+        </view>
+        <view class="category-stats">
+          <view class="category-amount">¥{{item.amount}}</view>
+          <view class="category-percent">{{item.percent}}%</view>
+        </view>
+      </view>
+    </block>
+    
+    <!-- 无数据提示 -->
+    <view class="no-data" wx:if="{{categoryStats.length === 0}}">
+      <image src="/assets/icons/info.png" class="icon" mode="aspectFit"></image>
+      <text>暂无{{activeTab === 'expense' ? '支出' : '收入'}}数据</text>
+    </view>
+  </view>
+</view>

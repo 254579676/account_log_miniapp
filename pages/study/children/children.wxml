@@ -1,0 +1,72 @@
+<view class="container">
+  <!-- 家庭信息区域 -->
+  <view class="family-info">
+    <view class="family-id-row">
+      <view class="family-id-text">
+        <text class="family-label">家庭ID：</text>
+        <text class="family-id-value" wx:if="{{familyId}}">{{familyId}}</text>
+        <text class="family-id-empty" wx:else>未加入家庭</text>
+      </view>
+      <button class="family-btn copy-btn-small" wx:if="{{familyId}}" bindtap="onCopyFamilyId">
+        复制
+      </button>
+    </view>
+    <view class="family-actions">
+      <button class="family-btn join-btn" bindtap="onJoinFamily">
+        <text class="join-icon">🏠</text>
+        加入家庭
+      </button>
+      <button class="family-btn add-btn" bindtap="onAddChild">
+        <text class="add-icon">+</text>
+        添加学生
+      </button>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{isLoading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 学生卡片列表 -->
+  <view class="children-list" wx:else>
+    <view class="child-card" wx:for="{{children}}" wx:key="id">
+      <!-- 主要信息区域 -->
+      <view class="card-main" bindtap="onChildTap" data-child="{{item}}">
+        <view class="card-left">
+          <image class="child-avatar" src="{{item.avatar_url || '/assets/icons/child.png'}}" />
+          <view class="child-info">
+            <text class="child-name">{{item.name}}</text>
+            <view class="child-details">
+              <text class="class-info">{{item.grade}} {{item.class}}</text>
+              <text class="school-info">{{item.school}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="card-arrow">
+          <text class="arrow-icon">></text>
+        </view>
+      </view>
+      
+      <!-- 操作按钮区域 -->
+      <view class="card-actions">
+        <button class="action-btn edit-btn" bindtap="onEditChild" data-child="{{item}}">
+          <text class="btn-icon">✏️</text>
+          编辑
+        </button>
+        <button class="action-btn delete-btn" bindtap="onDeleteChild" data-child="{{item}}">
+          <text class="btn-icon">🗑️</text>
+          删除
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:if="{{!isLoading && children.length === 0}}">
+    <image class="empty-icon" src="/assets/icons/child.png" />
+    <text class="empty-text">还没有添加学生</text>
+    <text class="empty-desc">点击上方按钮添加第一个学生</text>
+  </view>
+</view>

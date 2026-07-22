@@ -1,0 +1,89 @@
+<view class="container">
+  <view class="form-section">
+    <!-- 头像 -->
+    <view class="form-item">
+      <text class="form-label">头像</text>
+      <view class="avatar-section" bindtap="onChooseAvatar">
+        <image class="avatar" src="{{formData.avatar_url || '/assets/icons/child.png'}}" />
+        <view class="avatar-tip">点击选择头像</view>
+      </view>
+    </view>
+
+    <!-- 姓名 -->
+    <view class="form-item">
+      <view style="display:flex;align-items:center;">
+        <text class="form-label">姓名</text>
+        <text style="color:#ff4757;margin-left:10rpx;">*</text>
+      </view>
+      <input class="form-input" placeholder="请输入学生姓名" maxlength="50" value="{{formData.name}}" bindinput="onNameInput" />
+    </view>
+
+    <!-- 性别 -->
+    <view class="form-item">
+      <text class="form-label">性别</text>
+      <picker mode="selector" range="{{genderOptions}}" bindchange="onGenderChange">
+        <view class="picker">
+          {{genderOptions[formData.gender - 1] || '请选择性别'}}
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 出生日期 -->
+    <view class="form-item">
+      <text class="form-label">出生日期</text>
+      <picker mode="date" bindchange="onBirthDateChange">
+        <view class="picker">
+          {{formData.birth_date || '请选择出生日期'}}
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 年级 -->
+    <view class="form-item">
+      <view style="display:flex;align-items:center;">
+        <text class="form-label">年级</text>
+        <text style="color:#ff4757;margin-left:10rpx;">*</text>
+      </view>
+      <picker mode="selector" range="{{gradeOptions}}" range-key="name" value="{{selectedGradeIndex}}" bindchange="onGradeChange">
+        <view class="picker">
+          {{formData.grade || '请选择年级'}}
+          <text class="picker-arrow">></text>
+        </view>
+      </picker>
+    </view>
+
+    <!-- 班级 -->
+    <view class="form-item">
+      <text class="form-label">班级</text>
+      <input class="form-input" placeholder="请输入班级，如：3班" maxlength="50" value="{{formData.class}}" bindinput="onClassInput" />
+    </view>
+
+    <!-- 学校 -->
+    <view class="form-item">
+      <text class="form-label">学校</text>
+      <input class="form-input" placeholder="请输入学校名称" maxlength="50" value="{{formData.school}}" bindinput="onSchoolInput" />
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-section">
+    <!-- 左侧按钮 -->
+    <block wx:if="{{childId}}">
+      <button class="secondary-btn" bindtap="onDelete" disabled="{{isLoading}}">
+        <text>删除学生</text>
+      </button>
+    </block>
+    <block wx:else>
+      <button class="cancel-btn" bindtap="onCancel">
+        <text>取消</text>
+      </button>
+    </block>
+
+    <!-- 右侧按钮 -->
+    <button class="primary-btn" bindtap="onSave" disabled="{{isLoading}}">
+      <text>{{childId ? '保存修改' : '添加学生'}}</text>
+    </button>
+  </view>
+</view>

@@ -1,0 +1,173 @@
+<view class="container">
+  <!-- 表单区域 -->
+  <view class="form-section">
+    <!-- 基本信息 -->
+    <view class="section-title">基本信息</view>
+    
+    <!-- 第一行：错题来源 + 科目 -->
+    <view class="form-row">
+      <view class="form-item half">
+        <text class="label required">学习科目</text>
+        <picker mode="selector" range="{{subjects}}" range-key="name" bindchange="onSubjectChange" disabled="{{isEditMode}}">
+          <view class="picker-value {{isEditMode ? 'disabled-picker' : ''}}">
+            <text class="picker-text">{{selectedSubject || '请选择'}}</text>
+            <text class="picker-arrow" wx:if="{{!isEditMode}}">▼</text>
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item half">
+        <text class="label required">错题来源</text>
+        <picker mode="selector" range="{{sourceTypes}}" range-key="text" bindchange="onSourceTypeChange" disabled="{{isEditMode}}">
+          <view class="picker-value {{isEditMode ? 'disabled-picker' : ''}}">
+            <text class="picker-text">{{selectedSourceTypeText || '请选择'}}</text>
+            <text class="picker-arrow" wx:if="{{!isEditMode}}">▼</text>
+          </view>
+        </picker>
+      </view>
+      
+    </view>
+
+    <!-- 第二行：题目类型 + 难度等级 -->
+    <view class="form-row">
+      <view class="form-item half">
+        <text class="label required">题目类型</text>
+        <picker mode="selector" range="{{questionTypes}}" range-key="name" bindchange="onQuestionTypeChange">
+          <view class="picker-value">
+            <text class="picker-text">{{selectedQuestionType || '请选择'}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+      <view class="form-item half">
+        <text class="label required">难度等级</text>
+        <picker mode="selector" range="{{difficultyLevels}}" range-key="text" bindchange="onDifficultyChange">
+          <view class="picker-value">
+            <text class="picker-text">{{selectedDifficultyText || '请选择'}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 第三行：记录日期 -->
+    <view class="form-row">
+      <view class="form-item half">
+        <text class="label required">记录日期</text>
+        <picker mode="date" value="{{recordDate}}" bindchange="onDateChange">
+          <view class="picker-value">
+            <text class="picker-text">{{recordDate || '请选择'}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 错题分析 -->
+    <view class="section-title">错题分析</view>
+
+    <!-- 第四行：错题原因 + 错题根因 -->
+    <view class="form-row">
+      <view class="form-item half">
+        <text class="label required">错题原因</text>
+        <picker mode="selector" range="{{mistakeReasons}}" range-key="text" bindchange="onMistakeReasonChange">
+          <view class="picker-value">
+            <text class="picker-text">{{selectedMistakeReasonText || '请选择'}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+      <view class="form-item half">
+        <text class="label required">错题根因</text>
+        <picker mode="selector" range="{{mistakeReasonSubtypes}}" range-key="text" bindchange="onMistakeReasonSubtypeChange">
+          <view class="picker-value">
+            <text class="picker-text">{{selectedMistakeReasonSubtypeText || '请选择'}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 题目内容 -->
+    <view class="section-title">题目内容</view>
+
+    <!-- 错题内容 -->
+    <view class="form-item full-width">
+      <text class="label required">错题描述</text>
+      <textarea
+        class="textarea"
+        placeholder="请输入错题的具体内容..."
+        value="{{questionContent}}"
+        bindinput="onQuestionContentInput"
+        maxlength="300"
+        show-confirm-bar="{{false}}"
+        auto-height
+      ></textarea>
+      <text class="char-count">{{questionContent.length}}/300</text>
+    </view>
+
+    <!-- 解题思路与答案 -->
+    <view class="form-item full-width">
+      <text class="label">解题思路与答案</text>
+      <textarea
+        class="textarea"
+        placeholder="请输入正确的解题思路和方法..."
+        value="{{solutionContent}}"
+        bindinput="onSolutionContentInput"
+        maxlength="300"
+        show-confirm-bar="{{false}}"
+        auto-height
+      ></textarea>
+      <text class="char-count">{{solutionContent.length}}/300</text>
+    </view>
+
+    <!-- 解题图片上传 -->
+    <view class="form-item full-width">
+      <text class="label">解题图片</text>
+      <view class="solution-image-section">
+        <!-- 图片预览区域 -->
+        <view class="image-preview-container">
+          <!-- 上传按钮（始终在第一个位置） -->
+          <view class="upload-btn-container" wx:if="{{solutionImages.length < 9}}">
+            <view class="upload-btn" bindtap="onChooseSolutionImage">
+              <text class="upload-icon">+</text>
+              <text class="upload-text">上传解题图片</text>
+            </view>
+            <text class="upload-tip">最多可上传9张图片</text>
+          </view>
+          
+          <!-- 已上传的图片 -->
+          <block wx:for="{{solutionImages}}" wx:key="index">
+            <view class="image-preview-item">
+              <image 
+                class="preview-image" 
+                src="{{baseUrl + item.url}}" 
+                mode="aspectFill"
+                bindtap="onSolutionImagePreview"
+                data-url="{{item.url}}"
+                data-urls="{{solutionImages}}"
+              ></image>
+              <view class="image-delete" catchtap="onDeleteSolutionImage" data-index="{{index}}">
+                <text class="delete-icon">×</text>
+              </view>
+            </view>
+          </block>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 按钮区域 -->
+  <view class="modal-footer modal-footer-vertical">
+    <view class="continue-add-option" wx:if="{{!isEditMode}}">
+      <text class="continue-label" bindtap="onToggleContinueAdd">保存后继续添加</text>
+      <checkbox class="continue-checkbox" checked="{{continueAdd}}" bindtap="onToggleContinueAdd" />
+    </view>
+    <view class="footer-buttons">
+      <button class="cancel-btn" bindtap="onCancel">取消</button>
+      <button class="save-btn" bindtap="onSubmit" disabled="{{isLoading}}">
+        {{isLoading ? (isEditMode ? '更新中...' : '提交中...') : (isEditMode ? '更新' : '提交')}}
+      </button>
+    </view>
+  </view>
+</view>

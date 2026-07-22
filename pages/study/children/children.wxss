@@ -1,0 +1,291 @@
+.container {
+  padding: 20rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 家庭信息区域 */
+.family-info {
+  background: white;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  margin-bottom: 40rpx;
+}
+
+.family-id-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.family-id-text {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex: 1;
+}
+
+.family-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.family-id-value {
+  font-size: 32rpx;
+  color: #667eea;
+  font-weight: bold;
+  font-family: monospace;
+  letter-spacing: 2rpx;
+}
+
+.family-id-empty {
+  font-size: 28rpx;
+  color: #999;
+  font-style: italic;
+}
+
+.family-actions {
+  display: flex;
+  gap: 16rpx;
+  width: 100%;
+}
+
+.family-btn {
+  flex: 1;
+  display: inline-flex;
+  justify-content: center;
+  padding: 16rpx 24rpx;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  border: none;
+  font-weight: 500;
+  white-space: nowrap;
+  gap: 8rpx;
+}
+
+.copy-btn-small {
+  flex: none;
+  padding: 10rpx 20rpx;
+  font-size: 26rpx;
+  background: #E3F2FD;
+  color: #2196F3;
+  min-width: 100rpx;
+  max-width: 300rpx;
+}
+
+.join-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.family-btn.add-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.add-icon {
+  font-size: 28rpx;
+  margin-right: 8rpx;
+  font-weight: bold;
+}
+
+.join-icon {
+  font-size: 26rpx;
+}
+
+/* 加载状态 */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100rpx 0;
+}
+
+.loading-spinner {
+  width: 60rpx;
+  height: 60rpx;
+  border: 4rpx solid #f3f3f3;
+  border-top: 4rpx solid #4CAF50;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20rpx;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 学生卡片列表 */
+.children-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.child-card {
+  background: white;
+  border-radius: 20rpx;
+  overflow: hidden;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+
+.child-card:active {
+  transform: scale(0.98);
+}
+
+/* 卡片主要信息区域 */
+.card-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.card-left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.child-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+  border: 3rpx solid #f0f0f0;
+}
+
+.child-info {
+  flex: 1;
+}
+
+.child-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12rpx;
+  display: block;
+}
+
+.child-details {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12rpx;
+  flex-wrap: wrap;
+}
+
+.class-info {
+  font-size: 26rpx;
+  color: #ffffff;
+  display: inline-block;
+  text-align: left;
+  background: #3498db;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  width: fit-content;
+  font-weight: 500;
+}
+
+.school-info {
+  font-size: 26rpx;
+  color: #ffffff;
+  display: inline-block;
+  text-align: left;
+  background: #27ae60;
+  padding: 8rpx 16rpx;
+  border-radius: 12rpx;
+  width: fit-content;
+  font-weight: 500;
+}
+
+.card-arrow {
+  margin-left: 20rpx;
+}
+
+.arrow-icon {
+  font-size: 32rpx;
+  color: #ccc;
+  font-weight: bold;
+}
+
+/* 卡片操作区域 */
+.card-actions {
+  display: flex;
+  padding: 20rpx 30rpx;
+  gap: 20rpx;
+  background: #fafafa;
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 20rpx;
+  border-radius: 12rpx;
+  font-size: 26rpx;
+  border: none;
+  gap: 8rpx;
+}
+
+.btn-icon {
+  font-size: 24rpx;
+}
+
+.edit-btn {
+  background: #E3F2FD;
+  color: #2196F3;
+}
+
+.delete-btn {
+  background: #FFEBEE;
+  color: #F44336;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 40rpx;
+}
+
+.empty-icon {
+  width: 160rpx;
+  height: 160rpx;
+  margin-bottom: 30rpx;
+  opacity: 0.4;
+}
+
+.empty-text {
+  font-size: 32rpx;
+  color: #666;
+  margin-bottom: 15rpx;
+  font-weight: 500;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: #999;
+  text-align: center;
+  line-height: 1.5;
+}

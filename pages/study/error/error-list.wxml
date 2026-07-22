@@ -1,0 +1,236 @@
+<view class="container">
+  <!-- 顶部信息 -->
+  <view class="header-info">
+    <view class="student-info">
+      <image class="child-avatar" src="{{currentChild.avatar_url || '/assets/icons/child.png'}}" />
+      <view class="student-details">
+        <text class="student-name">{{currentChild.name}}</text>
+        <view class="student-meta">
+          <text class="class-info">{{currentChild.grade || ''}} {{currentChild.class || ''}}</text>
+          <text class="school-info">{{currentChild.school || ''}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="function-buttons">
+      <button class="analysis-btn" bindtap="onOpenAnalysis">
+        <text class="btn-icon">📊</text>
+        错题分析
+      </button>
+      <button class="add-error-btn" bindtap="onAddError">
+        <text class="btn-icon">➕</text>
+        录入错题
+      </button>
+    </view>
+  </view>
+
+
+  <!-- 学科错题统计 -->
+  <view class="subject-stats">
+    <view class="stats-title">学科错题统计</view>
+    <view class="chart-container">
+      <view class="chart-bars">
+        <view class="bar-item" wx:for="{{subjectStats}}" wx:key="name">
+          <view class="bar-wrapper">
+            <view class="bar-value">{{item.count}}</view>
+            <view class="bar" style="height: {{item.maxHeight}}rpx;">
+              <view class="bar-fill" style="height: {{item.barHeight}}rpx; background: {{item.color}};"></view>
+            </view>
+          </view>
+          <view class="bar-label">{{item.name}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+  <!-- 筛选条件 -->
+  <view class="filter-section">
+    <view class="filter-row">
+      <!-- 年级选择 -->
+      <view class="filter-item">
+        <text class="filter-label">年级:</text>
+        <picker mode="selector" range="{{gradeOptions}}" range-key="name" bindchange="onGradeChange">
+          <view class="filter-picker">
+            <text class="filter-text">{{selectedGrade.name || '请选择'}}</text>
+            <text class="filter-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+      
+      <!-- 学科选择 -->
+      <view class="filter-item">
+        <text class="filter-label">学科:</text>
+        <picker mode="selector" range="{{subjectOptions}}" range-key="name" bindchange="onSubjectChange">
+          <view class="filter-picker">
+            <text class="filter-text">{{selectedSubject.name || '全部'}}</text>
+            <text class="filter-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+    
+    <!-- 时间筛选（与作业统计页面保持一致） -->
+    <view class="period-selector">
+      <view class="period-tabs">
+        <view 
+          class="period-tab {{selectedPeriod === '本周' ? 'active' : ''}}" 
+          bindtap="onQuickPeriodSelect" 
+          data-period="本周"
+        >
+          本周
+        </view>
+        <view 
+          class="period-tab {{selectedPeriod === '本月' ? 'active' : ''}}" 
+          bindtap="onQuickPeriodSelect" 
+          data-period="本月"
+        >
+          本月
+        </view>
+        <view 
+          class="period-tab {{selectedPeriod === '本年' ? 'active' : ''}}" 
+          bindtap="onQuickPeriodSelect" 
+          data-period="本年"
+        >
+          本年
+        </view>
+        <view 
+          class="period-tab {{selectedPeriod === '自定义' ? 'active' : ''}}" 
+          bindtap="onShowCustomDatePicker"
+          data-period="自定义"
+        >
+          自定义
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 错题列表容器（固定高度，内部滚动） -->
+  <view class="error-list-container">
+    <!-- 错题列表 -->
+    <scroll-view 
+      class="error-list-scroll" 
+      scroll-y
+    >
+      <view class="error-list" wx:if="{{errorList.length > 0}}">
+        <view class="error-item" wx:for="{{errorList}}" wx:key="id" bindtap="onErrorDetail" data-error="{{item}}">
+          <!-- 第一行：科目、题型、日期 -->
+          <view class="error-header">
+            <view class="header-left">
+              <view class="subject-tag">{{item.subject_name || '未知科目'}}</view>
+              <view class="type-tag">{{item.question_type_name || '未知题型'}}</view>
+            </view>
+            <view class="header-right">
+              <text class="date-text">{{item.record_date}}</text>
+              <view class="edit-btn" catchtap="onShowEditMenu" data-error="{{item}}">
+                <text class="edit-icon">✏️</text>
+              </view>
+            </view>
+          </view>
+          
+          <!-- 第二行：错题内容 -->
+          <view class="content-section">
+            <view class="section-title">错题描述</view>
+            <view class="content-text" bindtap="onShowFullText" data-content="{{item.question_content}}" data-title="错题描述">{{item.question_content}}</view>
+          </view>
+          
+          <!-- 第三行：解答内容 -->
+          <view class="solution-section" wx:if="{{item.solution_content}}">
+            <view class="section-title">解题思路与答案</view>
+            <view class="solution-text" bindtap="onShowFullText" data-content="{{item.solution_content}}" data-title="解题思路与答案">{{item.solution_content}}</view>
+          </view>
+          
+          <!-- 第四行：标签和图片 -->
+          <view class="footer-section">
+            <view class="tags-container">
+              <view class="tag-item difficulty-tag difficulty-{{item.difficulty}}">
+                难度:{{item.difficulty}}
+              </view>
+              <!-- <view class="tag-item mastery-tag mastery-{{item.mastery_level}}">
+                掌握:{{item.mastery_level}}
+              </view> -->
+              <view class="tag-item reason-tag" wx:if="{{item.mistake_reason_subtype_label}}">
+                原因:{{item.mistake_reason_subtype_label}}
+              </view>
+            </view>
+            
+            <view class="image-preview" wx:if="{{item.solution_image && item.solution_image.length > 0}}">
+              <view class="image-btn" bindtap="onImagePreview" data-url="{{baseUrl + item.solution_image[0]}}" data-urls="{{item.solution_image}}" catchtap="onImagePreview">
+                <text class="image-icon">📷</text>
+                <text class="image-count">{{item.solution_image.length}}张图片</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-state" wx:if="{{errorList.length === 0 && !isLoading}}">
+        <image class="empty-icon" src="/assets/icons/empty-homework.png" />
+        <text class="empty-text">暂无错题</text>
+        <text class="empty-desc">继续努力，减少错题数量</text>
+      </view>
+
+      <!-- 加载状态 -->
+      <view class="loading-state" wx:if="{{isLoading && !isRefreshing}}">
+        <text class="loading-text">加载中...</text>
+      </view>
+
+      <!-- 加载更多 -->
+      <view class="load-more-section" wx:if="{{errorList.length > 0}}">
+        <view class="load-more-btn" wx:if="{{!isLoading && hasMore}}" bindtap="onLoadMore">
+          <text class="load-more-text">下一页</text>
+        </view>
+        <view class="loading-text" wx:if="{{isLoading}}">
+          正在加载...
+        </view>
+        <view class="no-more-text" wx:if="{{!hasMore && errorList.length > 0}}">
+          已显示全部数据
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 编辑选项弹窗 -->
+  <view class="modal-mask" wx:if="{{showEditOptions}}" bindtap="onHideEditOptions">
+    <view class="modal-content edit-options-modal" catchtap="onModalContentTap">
+      <view class="modal-header">
+        <text class="modal-title">编辑选项</text>
+        <text class="close-btn" bindtap="onHideEditOptions">×</text>
+      </view>
+
+      <view class="modal-body">
+        <view class="edit-option-item" bindtap="onEditError">
+          <text class="option-icon">✏️</text>
+          <text class="option-text">编辑错题</text>
+          <text class="option-arrow">></text>
+        </view>
+
+        <view class="edit-option-item" bindtap="onDeleteError">
+          <text class="option-icon">🗑️</text>
+          <text class="option-text">删除错题</text>
+          <text class="option-arrow">></text>
+        </view>
+      </view>
+
+      <view class="modal-footer">
+        <button class="cancel-btn" bindtap="onHideEditOptions">取消</button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 自定义时间选择器弹窗（与作业统计页面保持一致） -->
+  <view class="modal-mask" wx:if="{{showCalendar}}">
+    <view class="modal-content">
+      <view class="modal-header">
+        <text class="modal-title">选择日期范围</text>
+        <view class="close-btn" bindtap="onHideCalendar">×</view>
+      </view>
+      <calendar 
+        show="{{showCalendar}}" 
+        start-date="{{customStartDate}}"
+        end-date="{{customEndDate}}"
+        bind:cancel="onHideCalendar"
+        bind:confirm="onCalendarConfirm">
+      </calendar>
+    </view>
+  </view>
+</view>

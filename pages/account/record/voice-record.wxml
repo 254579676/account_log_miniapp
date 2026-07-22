@@ -1,0 +1,108 @@
+<!-- pages/record/voice-record.wxml -->
+<view class="container">
+  <view class="voice-area">
+    <view class="voice-status">
+      <block wx:if="{{isRecording}}">
+        <view class="recording-animation">
+          <view class="wave wave1"></view>
+          <view class="wave wave2"></view>
+          <view class="wave wave3"></view>
+        </view>
+        <view class="recording-text">正在录音...</view>
+        <view class="realtime-result" wx:if="{{currentRecognitionResult}}">
+          <text class="realtime-text">{{currentRecognitionResult}}</text>
+        </view>
+        <view class="recording-tips">请说出您的记账信息</view>
+        <view class="recording-example">例如："今天在肯德基花了38.5元"</view>
+      </block>
+      <block wx:elif="{{recognitionComplete}}">
+        <view class="recognition-text">识别结果</view>
+        <view class="voice-content">{{voiceContent}}</view>
+      </block>
+      <block wx:else>
+        <view class="start-tips">
+          <image src="/assets/icons/microphone.png" style="width: 64rpx; height: 64rpx;"></image>
+          <view class="tips-text">点击下方按钮开始语音记账</view>
+          <view class="tips-example">例如："今天在肯德基花了38.5元"</view>
+        </view>
+      </block>
+    </view>
+    
+    <view class="voice-action">
+      <block wx:if="{{isRecording}}">
+        <view class="record-btn recording" bindtap="stopRecord">
+          <image src="/assets/icons/microphone-slash.png" style="width: 48rpx; height: 48rpx;"></image>
+        </view>
+        <view class="action-text">点击结束</view>
+      </block>
+      <block wx:else>
+        <view class="record-btn" bindtap="startRecord">
+          <image src="/assets/icons/microphone.png" style="width: 48rpx; height: 48rpx;"></image>
+        </view>
+        <view class="action-text">点击开始</view>
+      </block>
+    </view>
+  </view>
+  
+  <view class="recognition-result" wx:if="{{recognitionComplete}}">
+    <view class="result-header">
+      <text class="result-title">识别结果：请确认或修改以下信息</text>
+    </view>
+    
+    <view class="form-section">
+      <view class="form-item">
+        <view class="form-label">类型</view>
+        <view class="form-value">
+          <picker bindchange="onTypeChange" value="{{typeIndex}}" range="{{typeOptions}}">
+            <view class="picker-value">
+              <text>{{typeOptions[typeIndex]}}</text>
+              <image src="/assets/icons/right.png" style="width: 24rpx; height: 24rpx;"></image>
+            </view>
+          </picker>
+        </view>
+      </view>
+      
+      <view class="form-item">
+        <view class="form-label">金额</view>
+        <view class="form-value">
+          <input type="digit" value="{{amount}}" bindinput="onAmountInput" />
+        </view>
+      </view>
+      
+      <view class="form-item">
+        <view class="form-label">分类</view>
+        <view class="form-value">
+          <picker bindchange="onCategoryChange" value="{{categoryIndex}}" range="{{categoryNames}}">
+            <view class="picker-value">
+              <text>{{categoryNames[categoryIndex]}}</text>
+              <image src="/assets/icons/right.png" style="width: 24rpx; height: 24rpx;"></image>
+            </view>
+          </picker>
+        </view>
+      </view>
+      
+      <view class="form-item">
+        <view class="form-label">日期</view>
+        <view class="form-value">
+          <picker mode="date" value="{{date}}" bindchange="onDateChange">
+            <view class="picker-value">
+              <text>{{date}}</text>
+              <image src="/assets/icons/calendar.png" style="width: 24rpx; height: 24rpx;"></image>
+            </view>
+          </picker>
+        </view>
+      </view>
+      
+      <view class="form-item">
+        <view class="form-label">备注</view>
+        <view class="form-value">
+          <input placeholder="添加备注" maxlength="20" value="{{description}}" bindinput="onDescriptionInput" />
+        </view>
+      </view>
+    </view>
+    
+    <view class="save-btn-container">
+      <button class="save-btn" bindtap="saveRecord">保存</button>
+    </view>
+  </view>
+</view>

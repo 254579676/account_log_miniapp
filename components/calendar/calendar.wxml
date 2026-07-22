@@ -1,0 +1,44 @@
+<view class="calendar-container">
+  <!-- 日历头部 -->
+  <view class="calendar-header">
+    <view class="calendar-header-btn" bindtap="prevMonth">‹</view>
+    <text class="calendar-header-title">{{currentYear}}年{{currentMonth + 1}}月</text>
+    <view class="calendar-header-btn" bindtap="nextMonth">›</view>
+  </view>
+
+  <!-- 星期标题 -->
+  <view class="calendar-weekdays">
+    <text class="weekday">日</text>
+    <text class="weekday">一</text>
+    <text class="weekday">二</text>
+    <text class="weekday">三</text>
+    <text class="weekday">四</text>
+    <text class="weekday">五</text>
+    <text class="weekday">六</text>
+  </view>
+
+  <!-- 日期列表 -->
+  <view class="calendar-days">
+    <block wx:for="{{calendarDays}}" wx:key="index">
+      <view class="day-item">
+        <view 
+          class="day-inner {{item.className}}" 
+          data-date="{{item.date}}"
+          bindtap="selectDate"
+        >
+          {{item.day}}
+          <!-- 点标记 -->
+          <block wx:if="{{item.hasDot}}">
+            <view class="day-dot"></view>
+          </block>
+        </view>
+      </view>
+    </block>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="navigation-buttons">
+    <button class="nav-btn cancel-btn" bindtap="onCancel">取消</button>
+    <button class="nav-btn confirm-btn" bindtap="onConfirm" disabled="{{!selectedStartDate || selectedStartDate === ''}}">确定</button>
+  </view>
+</view>

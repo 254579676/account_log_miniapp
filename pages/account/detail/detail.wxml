@@ -1,0 +1,224 @@
+<!-- pages/detail/detail.wxml -->
+<view class="container">
+  <!-- 筛选栏 -->
+  <view class="filter-bar">
+    <view class="filter-item" bindtap="showDateFilter">
+      <text>{{dateFilterText}}</text>
+      <image src="/assets/icons/chevron-down.png" class="icon" mode="aspectFit"></image>
+    </view>
+    <view class="filter-item" bindtap="showTypeFilter">
+      <text>{{typeFilterText}}</text>
+      <image src="/assets/icons/chevron-down.png" class="icon" mode="aspectFit"></image>
+    </view>
+    <view class="filter-item" bindtap="showCategoryFilter">
+      <text>{{categoryFilterText}}</text>
+      <image src="/assets/icons/chevron-down.png" class="icon" mode="aspectFit"></image>
+    </view>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-card">
+    <view class="stats-item">
+      <view class="stats-label">支出</view>
+      <view class="stats-value text-danger">¥{{filteredStats.expense}}</view>
+    </view>
+    <view class="stats-divider"></view>
+    <view class="stats-item">
+      <view class="stats-label">收入</view>
+      <view class="stats-value text-primary">¥{{filteredStats.income}}</view>
+    </view>
+    <view class="stats-divider"></view>
+    <view class="stats-item">
+      <view class="stats-label">结余</view>
+      <view class="stats-value {{filteredStats.income - filteredStats.expense >= 0 ? 'text-primary' : 'text-danger'}}">
+        ¥{{filteredStats.amount}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 账单列表 -->
+  <!-- 关键修改：添加固定高度和滚动 -->
+  <scroll-view scroll-y class="bill-items-scroll" style="height: 900rpx">
+    <view class="bill-list">
+      <block wx:for="{{groupedTransactions}}" wx:key="date">
+        <view class="date-group">
+          <view class="date-header">
+            <text class="date-text">{{item.date}}</text>
+            <text class="date-summary">
+              支出: ¥{{item.dayExpense}} 收入: ¥{{item.dayIncome}}
+            </text>
+          </view>
+            <view class="bill-items">
+              <block wx:for="{{item.transactions}}" wx:key="id" wx:for-item="transaction">
+                <view class="bill-item" bindtap="viewTransactionDetail" data-id="{{transaction.id}}">
+                  <view class="bill-category">
+                    <view class="category-icon">
+                      <image src="/assets/icons/{{transaction.categoryIcon}}.png" class="icon" mode="aspectFit"></image>
+                    </view>
+                  </view>
+                  <view class="bill-info">
+                    <view class="bill-title">{{transaction.categoryName}}</view>
+                    <view class="bill-desc">{{transaction.description || '无备注'}}</view>
+                  </view>
+                  <view class="bill-amount {{transaction.type === 'expense' ? 'text-danger' : 'text-primary'}}">
+                    {{transaction.type === 'expense' ? '-' : '+'}}¥{{transaction.amount}}
+                  </view>
+                </view>
+              </block>
+            </view>
+        </view>
+      </block>
+
+      <!-- 无数据提示 -->
+      <view class="no-data" wx:if="{{groupedTransactions.length === 0}}">
+        <image src="/assets/icons/info-circle.png" class="icon" mode="aspectFit"></image>
+        <text class="no-data-text">暂无符合条件的账单</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 加载更多 -->
+  <view wx:if="{{hasMore}}" class="load-more-container">
+    <button 
+      wx:if="{{!isLoading}}"
+      class="load-more-btn" 
+      bindtap="loadMore"
+    >
+      加载更多
+    </button>
+    <view wx:else class="loading-text">
+      加载中...
+    </view>
+  </view>
+</view>
+
+<!-- 日期筛选弹窗 -->
+<view class="filter-popup {{showDateFilterPopup ? 'show' : ''}}">
+  <view class="filter-popup-mask" bindtap="hideDateFilter"></view>
+  <view class="filter-popup-content">
+    <view class="filter-popup-header">
+      <text>选择日期范围</text>
+      <view class="filter-popup-close" bindtap="hideDateFilter">
+        <image src="/assets/icons/times.png" class="icon" mode="aspectFit"></image>
+      </view>
+    </view>
+    <view class="filter-popup-body">
+      <view class="filter-option {{dateFilter === 'all' ? 'active' : ''}}" bindtap="selectDateFilter" data-filter="all">
+        <text>全部时间</text>
+      </view>
+      <view class="filter-option {{dateFilter === 'today' ? 'active' : ''}}" bindtap="selectDateFilter" data-filter="today">
+        <text>今天</text>
+      </view>
+      <view class="filter-option {{dateFilter === 'yesterday' ? 'active' : ''}}" bindtap="selectDateFilter" data-filter="yesterday">
+        <text>昨天</text>
+      </view>
+      <view class="filter-option {{dateFilter === 'thisWeek' ? 'active' : ''}}" bindtap="selectDateFilter" data-filter="thisWeek">
+        <text>本周</text>
+      </view>
+      <view class="filter-option {{dateFilter === 'thisMonth' ? 'active' : ''}}" bindtap="selectDateFilter" data-filter="thisMonth">
+        <text>本月</text>
+      </view>
+      <view class="filter-option {{dateFilter === 'lastMonth' ? 'active' : ''}}" bindtap="selectDateFilter" data-filter="lastMonth">
+        <text>上月</text>
+      </view>
+      <view class="filter-option {{dateFilter === 'custom' ? 'active' : ''}}" bindtap="selectDateFilter" data-filter="custom">
+        <text>自定义</text>
+      </view>
+
+      <view class="custom-date-range" wx:if="{{dateFilter === 'custom'}}">
+        <view class="date-picker">
+          <text>开始日期</text>
+          <picker mode="date" value="{{customStartDate}}" bindchange="onStartDateChange">
+            <view class="picker-value">
+              <text>{{customStartDate}}</text>
+              <image src="/assets/icons/calendar.png" class="icon" mode="aspectFit"></image>
+            </view>
+          </picker>
+        </view>
+        <view class="date-picker">
+          <text>结束日期</text>
+          <picker mode="date" value="{{customEndDate}}" bindchange="onEndDateChange">
+            <view class="picker-value">
+              <text>{{customEndDate}}</text>
+              <image src="/assets/icons/calendar.png" class="icon" mode="aspectFit"></image>
+            </view>
+          </picker>
+        </view>
+      </view>
+    </view>
+    <view class="filter-popup-footer">
+      <button class="btn btn-outline" bindtap="resetDateFilter">重置</button>
+      <button class="btn btn-primary" bindtap="applyDateFilter">确定</button>
+    </view>
+  </view>
+</view>
+
+<!-- 类型筛选弹窗 -->
+<view class="filter-popup {{showTypeFilterPopup ? 'show' : ''}}">
+  <view class="filter-popup-mask" bindtap="hideTypeFilter"></view>
+  <view class="filter-popup-content">
+    <view class="filter-popup-header">
+      <text>选择账单类型</text>
+      <view class="filter-popup-close" bindtap="hideTypeFilter">
+        <image src="/assets/icons/times.png" class="icon" mode="aspectFit"></image>
+      </view>
+    </view>
+    <view class="filter-popup-body">
+      <view class="filter-option {{typeFilter === 'all' ? 'active' : ''}}" bindtap="selectTypeFilter" data-filter="all">
+        <text>全部</text>
+      </view>
+      <view class="filter-option {{typeFilter === 'expense' ? 'active' : ''}}" bindtap="selectTypeFilter" data-filter="expense">
+        <text>支出</text>
+      </view>
+      <view class="filter-option {{typeFilter === 'income' ? 'active' : ''}}" bindtap="selectTypeFilter" data-filter="income">
+        <text>收入</text>
+      </view>
+    </view>
+    <view class="filter-popup-footer">
+      <button class="btn btn-outline" bindtap="resetTypeFilter">重置</button>
+      <button class="btn btn-primary" bindtap="applyTypeFilter">确定</button>
+    </view>
+  </view>
+</view>
+
+<!-- 分类筛选弹窗 -->
+<view class="filter-popup {{showCategoryFilterPopup ? 'show' : ''}}">
+  <view class="filter-popup-mask" bindtap="hideCategoryFilter"></view>
+  <view class="filter-popup-content">
+    <view class="filter-popup-header">
+      <text>选择账单分类</text>
+      <view class="filter-popup-close" bindtap="hideCategoryFilter">
+        <image src="/assets/icons/times.png" class="icon" mode="aspectFit"></image>
+      </view>
+    </view>
+    <view class="filter-popup-body">
+      <view class="filter-option {{categoryFilter === 'all' ? 'active' : ''}}" bindtap="selectCategoryFilter" data-filter="all">
+        <text>全部分类</text>
+      </view>
+
+      <view class="filter-group-title">支出</view>
+      <block wx:for="{{expenseCategories}}" wx:key="id">
+        <view class="filter-option {{categoryFilter === item.id ? 'active' : ''}}" bindtap="selectCategoryFilter" data-filter="{{item.id}}">
+          <view class="filter-option-icon">
+            <image src="/assets/icons/{{item.icon}}.png" class="icon" mode="aspectFit"></image>
+          </view>
+          <text>{{item.name}}</text>
+        </view>
+      </block>
+
+      <view class="filter-group-title">收入</view>
+      <block wx:for="{{incomeCategories}}" wx:key="id">
+        <view class="filter-option {{categoryFilter === item.id ? 'active' : ''}}" bindtap="selectCategoryFilter" data-filter="{{item.id}}">
+          <view class="filter-option-icon">
+            <image src="/assets/icons/{{item.icon}}.png" class="icon" mode="aspectFit"></image>
+          </view>
+          <text>{{item.name}}</text>
+        </view>
+      </block>
+    </view>
+    <view class="filter-popup-footer">
+      <button class="btn btn-outline" bindtap="resetCategoryFilter">重置</button>
+      <button class="btn btn-primary" bindtap="applyCategoryFilter">确定</button>
+    </view>
+  </view>
+</view>

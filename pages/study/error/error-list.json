@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "错题列表",
+  "enablePullDownRefresh": false,
+  "usingComponents": {
+    "calendar": "/components/calendar/calendar"
+  }
+}

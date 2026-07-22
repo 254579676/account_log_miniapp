@@ -1,0 +1,64 @@
+{
+  "pages": [
+    "pages/account/index/index",
+    "pages/account/record/record",
+    "pages/account/record/voice-record",
+    "pages/account/detail/detail",
+    "pages/account/detail/transaction-detail",
+    "pages/account/stats/stats",
+    "pages/account/profile/profile",
+    "pages/account/about/about",
+    "pages/account/budget/budget",
+    "pages/study/index/index",
+    "pages/study/children/children",
+    "pages/study/children/add-child",
+    "pages/study/homework/homework",
+    "pages/study/homework/homework-detail",
+    "pages/study/homework/homework-stats",
+    "pages/study/exam/exam",
+    "pages/study/exam/exam-stats",
+    "pages/study/error/error-list",
+    "pages/study/error/error-input",
+    "pages/study/analysis/analysis"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#2E7D32",
+    "navigationBarTitleText": "小二云笔记",
+    "navigationBarTextStyle": "white"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#4CAF50",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/account/index/index",
+        "text": "记账",
+        "iconPath": "assets/icons/tab-record.png",
+        "selectedIconPath": "assets/icons/tab-record-active.png"
+      },
+      {
+        "pagePath": "pages/study/index/index",
+        "text": "学习",
+        "iconPath": "assets/icons/tab-study.png",
+        "selectedIconPath": "assets/icons/tab-study-active.png"
+      },
+      {
+        "pagePath": "pages/account/profile/profile",
+        "text": "我的",
+        "iconPath": "assets/icons/tab-profile.png",
+        "selectedIconPath": "assets/icons/tab-profile-active.png"
+      }
+    ]
+  },
+  "plugins": {
+    "WechatSI": {
+      "version": "0.3.6",
+      "provider": "wx069ba97219f66d99"
+    }
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

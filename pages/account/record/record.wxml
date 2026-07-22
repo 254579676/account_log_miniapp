@@ -1,0 +1,68 @@
+<!-- pages/record/record.wxml -->
+<view class="container">
+  <!-- 顶部标签页 -->
+  <view class="tabs">
+    <view class="tab {{activeTab === 'expense' ? 'active' : ''}}" bindtap="switchTab" data-tab="expense">支出</view>
+    <view class="tab {{activeTab === 'income' ? 'active' : ''}}" bindtap="switchTab" data-tab="income">收入</view>
+  </view>
+  
+  <!-- AI记账入口 -->
+  <view class="ai-entry">
+    <view class="ai-entry-item" bindtap="navigateToPhotoRecord">
+      <image src="/assets/icons/camera.png" class="icon" mode="aspectFit"></image>
+      <text class="ai-entry-text">拍照记账</text>
+    </view>
+    <view class="ai-entry-item" bindtap="navigateToVoiceRecord">
+      <image src="/assets/icons/microphone.png" class="icon" mode="aspectFit"></image>
+      <text class="ai-entry-text">语音记账</text>
+    </view>
+  </view>
+  
+ 
+  <!-- 分类选择 -->
+  <view class="category-section">
+    <view class="section-title">分类</view>
+    <scroll-view class="category-scroll" scroll-y>
+      <view class="grid">
+        <block wx:for="{{activeTab === 'expense' ? expenseCategories : incomeCategories}}" wx:key="id">
+          <view class="grid-item grid-item-3" bindtap="selectCategory" data-id="{{item.id}}">
+            <view class="category-item {{selectedCategory === item.id ? 'active' : ''}}">
+              <view class="category-icon">
+                <image src="/assets/icons/{{item.icon}}.png" class="icon" mode="aspectFit"></image>
+              </view>
+              <view class="category-name">{{item.name}}</view>
+            </view>
+          </view>
+        </block>
+      </view>
+    </scroll-view>
+  </view>
+  
+  <!-- 记账表单 -->
+  <view class="form-section">
+      <!-- 金额输入 -->
+    <view class="amount-input">
+      <text class="currency">¥</text>
+      <input type="digit" maxlength="12" class="amount" value="{{amount}}" focus="{{amountFocus}}" placeholder="0.00" bindinput="onAmountInput" />
+    </view>
+    <view class="form-item">
+      <view class="form-label">日期</view>
+      <picker mode="date" value="{{date}}" bindchange="onDateChange" >
+        <view class="form-value">
+          <text>{{date}}</text>
+          <image src="/assets/icons/calendar.png" class="icon" mode="aspectFit"></image>
+        </view>
+      </picker>
+    </view>
+    
+    <view class="form-item">
+      <view class="form-label">备注</view>
+      <input class="form-input" placeholder="添加备注" value="{{description}}" bindinput="onDescriptionInput" />
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="save-btn-container">
+    <button class="save-btn" bindtap="saveRecord" disabled="{{!canSave}}">保存</button>
+  </view>
+</view>
