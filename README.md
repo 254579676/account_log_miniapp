@@ -2,3 +2,10 @@
 功能：个人消费记账，学习管理（孩子管理，家庭成员，每日作业打卡，考试记录，考试分析，错题分析）
 
 app.js配置后端服务地址
+
+微信原生写法
+<img width="520" height="980" alt="image" src="https://github.com/user-attachments/assets/c2f768f9-727d-49a0-9bfd-4518de986afc" />
+
+<img width="520" height="980" alt="image" src="https://github.com/user-attachments/assets/d5ef53a9-44b1-4348-8aca-4a541d9028c6" />
+
+<img width="520" height="980" alt="image" src="https://github.com/user-attachments/assets/caa96566-2c08-48db-a97e-40bc740b8904" />
